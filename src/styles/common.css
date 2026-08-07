@@ -12,9 +12,7 @@ body {
   letter-spacing: 0;
 
   color: var(--color-text-primary);
-  background-color: var(--color-white);
-  background-image: var(--gradient-background);
-  background-attachment: fixed;
+  background-color: #e5e5e5;
 
   word-break: keep-all;
   overflow-wrap: break-word;
@@ -29,7 +27,12 @@ body {
 
 .page {
   width: 100%;
+  max-width: 430px;
   min-height: 100vh;
+  margin: 0 auto;
+
+  background-color: var(--color-white);
+  background-image: var(--gradient-background);
 }
 
 .page-container {
