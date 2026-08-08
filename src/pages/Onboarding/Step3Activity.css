@@ -1,0 +1,143 @@
+.step3-page {
+  position: relative;
+  max-width: 393px;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  background-image: none;
+  padding: 0 22px 40px;
+}
+
+.step3-header {
+  position: relative;
+  height: 68px;
+}
+
+.step3-back {
+  position: absolute;
+  left: 0;
+  top: 51px;
+
+  padding: 0;
+  border: 0;
+  background: none;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.step3-progress {
+  position: absolute;
+  right: 0;
+  top: 97px;
+
+  font-size: var(--font-size-14);
+  font-weight: var(--font-medium);
+  color: #EC8181;
+}
+
+.step3-progress-bar-wrap {
+  margin: 17px -22px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.step3-progress-bar {
+  width: 393px;
+  height: 5px;
+  border-radius: 2px;
+  background-color: #f0edee;
+  overflow: hidden;
+}
+
+.step3-progress-bar-fill {
+  width: 289px;
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #ffb7b7 0%, #fffce1 100%);
+}
+
+.step3-title {
+  margin-top: 32px;
+
+  font-size: 24px;
+  font-weight: var(--font-bold);
+  line-height: 1.4;
+}
+
+.step3-subtitle {
+  margin-top: 6px;
+
+  font-size: var(--font-size-15);
+  font-weight: var(--font-medium);
+  color: var(--color-text-secondary);
+}
+
+.step3-card-wrap {
+  margin: 16px -22px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.step3-card {
+  width: 393px;
+  min-height: 616px;
+  padding: 24px 22px;
+
+  background-color: #f7f3f3;
+}
+
+.step3-hint {
+  margin-top: 0;
+
+  font-size: 14px;
+  font-weight: 150;
+  color: var(--color-text-secondary);
+}
+
+.step3-grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.step3-item {
+  width: 165px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+
+  border: 1px solid #f0edee;
+  border-radius: 15px;
+  background-color: var(--color-white);
+  text-align: left;
+  cursor: pointer;
+}
+
+.step3-item.is-selected {
+  border-color: #f18e8e;
+  background-color: #ffeded;
+}
+
+.step3-item-icon {
+  width: 37px;
+  height: 37px;
+  flex-shrink: 0;
+}
+
+.step3-item-label {
+  font-size: 14px;
+  font-weight: var(--font-medium);
+  color: var(--color-text-primary);
+}
+
+.step3-next {
+  margin-top: 191px;
+  height: 52px;
+}
+
+.step3-next:active {
+  background-color: #341a1a;
+}
