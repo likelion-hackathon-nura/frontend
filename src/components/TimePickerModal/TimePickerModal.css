@@ -13,7 +13,7 @@
 .time-picker-sheet {
   position: relative;
   width: 393px;
-  height: 350px;
+  height: auto;
   padding: 0 22px 24px;
 
   border-radius: 20px 20px 0 0;
