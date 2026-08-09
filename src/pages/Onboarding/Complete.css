@@ -1,0 +1,32 @@
+.complete-page {
+  max-width: 393px;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+
+  background-image: linear-gradient(165deg, #ffc7c7 0%, #fffce1 100%);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.complete-badge {
+  width: 172px;
+  height: 154px;
+  margin-bottom: 24px;
+}
+
+.complete-title {
+  margin-top: 16px;
+  font-size: var(--font-size-24);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+}
+
+.complete-subtitle {
+  margin-top: 18px;
+
+  font-size: var(--font-size-20);
+  color: var(--color-text-secondary);
+}
