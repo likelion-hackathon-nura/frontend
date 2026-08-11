@@ -18,6 +18,10 @@ import Comment_heart from '../../assets/images/comment_heart.svg'
 import Graph_logo from '../../assets/images/report_graph_logo.svg'
 import Graph_icon from '../../assets/images/report_graph_icon.svg'
 import Graph_icon2 from '../../assets/images/report_graph_icon2.svg'
+import Social_icon from '../../assets/images/social_icon.svg'
+import Refresh_icon from '../../assets/images/refresh_icon.svg'
+import Mytime_icon from '../../assets/images/mytime_icon.svg'
+
 
 const graphData = [
     { day: '월', current: 4.3, previous: 3.0 },
@@ -203,9 +207,52 @@ const Report = () => {
 
 
                             <div className="report_w_time">
-                                <p>3-Time 밸런스</p>
-                                <p>8.21일 기준</p>
-                                <div className="report_w_t_box"></div>
+                                <div className="report_w_t_txt">
+                                    <p>3-Time 밸런스</p>
+                                    <p className='report_w_t_txt_2'>8.21일 기준</p>
+                                </div>
+
+                                <div className="report_w_t_box">
+                                    <div className="report_w_t_box_txt">
+                                        <img src={Social_icon} alt="" />
+                                        <div className="report_w_t_box_txt1">
+                                            <p>Social Time</p>
+                                            <div className="report_w_t_progress_row">
+                                                <div className="report_w_t_progress">
+                                                    <div className="report_w_t_progress_fill social"></div>
+                                                </div>
+                                                <span className="report_w_t_percent social_percent">34%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="report_w_t_box_txt">
+                                        <img src={Refresh_icon} alt="" />
+                                        <div className="report_w_t_box_txt2">
+                                            <p>Refresh Time</p>
+                                            <div className="report_w_t_progress_row">
+                                                <div className="report_w_t_progress">
+                                                    <div className="report_w_t_progress_fill refresh"></div>
+                                                </div>
+                                                <span className="report_w_t_percent">40%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="report_w_t_box_txt">
+                                        <img src={Mytime_icon} alt="" />
+                                        <div className="report_w_t_box_txt3">
+                                            <p>My Time</p>
+                                            <div className="report_w_t_progress_row">
+                                                <div className="report_w_t_progress">
+                                                    <div className="report_w_t_progress_fill mytime"></div>
+                                                </div>
+                                                <span className="report_w_t_percent">26%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
                             </div>
                         </div>
                     )}
