@@ -218,7 +218,9 @@ const Report = () => {
                     )}
                 </div>
 
-                <div className="report_footer"></div>
+                <div className="report_footer">
+                    <div className="report_footer_circle"></div>
+                </div>
             </div>
         </div>
     )
