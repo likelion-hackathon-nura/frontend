@@ -2,11 +2,12 @@
 
 .report_wrap {
     width: 393px;
-    height: 852px;
-    min-height: 0;
+    /* height: 852px; */
+    /* min-height: 0; */
+    min-height: 100vh;
     margin: 0 auto;
     position: relative;
-    overflow: hidden;
+    /* overflow: hidden; */
 }
 
 .report_top {
@@ -287,6 +288,7 @@
 /* ======================================================= */
 
 .report_main {
+    width: 100%;
     position: absolute;
     top: 105px;
     bottom: 89px;
@@ -297,10 +299,6 @@
     scrollbar-width: none;
     -ms-overflow-style: none;
     padding-bottom: 47px;
-}
-
-.report_main::-webkit-scrollbar {
-    display: none;
 }
 
 /* ======================================================= */

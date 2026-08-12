@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import BottomNav from '../../components/BottomNav/BottomNav'
 
 import {
     LineChart,
@@ -265,9 +266,7 @@ const Report = () => {
                     )}
                 </div>
 
-                <div className="report_footer">
-                    <div className="report_footer_circle"></div>
-                </div>
+                <BottomNav />
             </div>
         </div>
     )
