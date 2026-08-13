@@ -7,6 +7,7 @@ import Step2SleepMeal from './pages/Onboarding/Step2SleepMeal';
 import Step3Activity from './pages/Onboarding/Step3Activity';
 import Step4SkinInfo from './pages/Onboarding/Step4SkinInfo';
 import Complete from './pages/Onboarding/Complete';
+import Report from './pages/Report/Report';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/onboarding/step3" element={<Step3Activity />} />
         <Route path="/onboarding/step4" element={<Step4SkinInfo />} />
         <Route path="/onboarding/complete" element={<Complete />} />
+        <Route path="/report" element={<Report />} />
       </Routes>
     </BrowserRouter>
   );
