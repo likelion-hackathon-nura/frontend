@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import BottomNav from '../../components/BottomNav/BottomNav'
 
 import '../Skin/Skin.css'
@@ -58,6 +59,12 @@ const Skin = () => {
         { day: '일', status: 'none' },
     ]
 
+    const navigate = useNavigate()
+
+    const goToCheckIn = () => {
+        navigate('/checkin')
+    }
+
     // 1: 진정 케어, 2: 보습 케어, 3: 완료
     const [currentStep, setCurrentStep] = useState(2)
 
@@ -73,7 +80,7 @@ const Skin = () => {
                     <div className="skin_m01_box">
                         <p className='skin_m01_box_1'>퇴근 체크인</p>
                         <p className='skin_m01_box_2'>오늘의 피부 상태와 컨디션을<br />기록하고 맞춤 케어를 받아보세요.</p>
-                        <button className='skin_m01_box_3'>체크인하러 가기<img src={NextArrow} alt="" /></button>
+                        <button className='skin_m01_box_3' onClick={goToCheckIn}>체크인하러 가기<img src={NextArrow} alt="" /></button>
                     </div>
                     <div className="skin_m01_box">
                         <p className='skin_m01_box_1'>3분 회복 모드</p>
@@ -312,7 +319,7 @@ const Skin = () => {
                             <div className="skin_locked_content">
                                 <img src={SkinLock} alt="" className='skin_lock_icon' />
                                 <p>퇴근 체크인을 완료하면<br />조회하실 수 있어요.</p>
-                                <button>체크인하고 결과 보기<img src={NextArrow} alt="" /></button>
+                                <button onClick={goToCheckIn}>체크인하고 결과 보기<img src={NextArrow} alt="" /></button>
                             </div>
                         )}
 

@@ -8,6 +8,7 @@ import Step4SkinInfo from './pages/Onboarding/Step4SkinInfo';
 import Complete from './pages/Onboarding/Complete';
 import Report from './pages/Report/Report';
 import Skin from './pages/Skin/Skin'
+import CheckIn from './pages/Skin/CheckIn'
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/onboarding/complete" element={<Complete />} />
         <Route path="/report" element={<Report />} />
         <Route path="/skin" element={<Skin />} />
+        <Route path="/checkin" element={<CheckIn />} />
       </Routes>
     </BrowserRouter>
   );
