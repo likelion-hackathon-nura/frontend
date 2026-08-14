@@ -21,6 +21,7 @@ import CheckGreen from '../../assets/images/check_green.svg'
 import Product01 from '../../assets/images/skin_product_1.svg'
 import Product02 from '../../assets/images/skin_product_2.svg'
 import SkinTime from '../../assets/images/skin_time.svg'
+import SkinLock from '../../assets/images/skin_lock_icon.svg'
 
 
 
@@ -309,20 +310,9 @@ const Skin = () => {
                         {/* =========================체크인 전 잠금 화면========================= */}
                         {!isCheckedIn && (
                             <div className="skin_locked_content">
-
-                                <div className="skin_lock_icon">
-                                    🔒
-                                </div>
-
-                                <p>
-                                    퇴근 체크인을 완료하면<br />
-                                    조회하실 수 있어요.
-                                </p>
-
-                                <button>
-                                    체크인하러 가기
-                                </button>
-
+                                <img src={SkinLock} alt="" className='skin_lock_icon' />
+                                <p>퇴근 체크인을 완료하면<br />조회하실 수 있어요.</p>
+                                <button>체크인하고 결과 보기<img src={NextArrow} alt="" /></button>
                             </div>
                         )}
 
@@ -331,27 +321,21 @@ const Skin = () => {
 
                     {/* =========================슬라이드 페이지 표시========================= */}
                     <div className="skin_dots">
-
                         <button
+                            type="button"
                             className={currentSlide === 0 ? 'active' : ''}
-                            onClick={() => {
-                                if (isCheckedIn) {
-                                    setCurrentSlide(0)
-                                }
-                            }}
+                            onClick={() => setCurrentSlide(0)}
+                            disabled={!isCheckedIn}
                             aria-label="피부 분석 결과 보기"
                         />
 
                         <button
+                            type="button"
                             className={currentSlide === 1 ? 'active' : ''}
-                            onClick={() => {
-                                if (isCheckedIn) {
-                                    setCurrentSlide(1)
-                                }
-                            }}
+                            onClick={() => setCurrentSlide(1)}
+                            disabled={!isCheckedIn}
                             aria-label="3분 회복 모드 보기"
                         />
-
                     </div>
 
                 </div>
