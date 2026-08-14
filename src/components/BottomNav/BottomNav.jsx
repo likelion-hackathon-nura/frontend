@@ -88,7 +88,14 @@ const BottomNav = () => {
 
           {scheduleOpen && (
             <>
-              <button type="button" className="bottom_nav_menu_sub" onClick={(e) => e.stopPropagation()}>
+              <button
+                type="button"
+                className="bottom_nav_menu_sub"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  navigate('/schedule/category')
+                }}
+              >
                 일정 추가하기
               </button>
               <button type="button" className="bottom_nav_menu_sub" onClick={(e) => e.stopPropagation()}>
