@@ -88,9 +88,14 @@
 
   background-color: #f8f8f8;
   border: 1px solid #f0edee;
+  caret-color: #F18E8E;
 
   font-size: 16px;
   font-weight: var(--font-medium);
+}
+
+.signup-form .input:focus-visible {
+  outline: none;
 }
 
 .signup-form input.signup-password-input {
@@ -128,7 +133,7 @@
 }
 
 .signup-hint-error {
-  margin-top: -6px;
+  margin-top: 8px;
   color: #D27373;
 }
 

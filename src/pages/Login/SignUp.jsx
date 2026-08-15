@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { ReactComponent as BackIcon } from '../../assets/images/backbutton.svg';
 import { signup } from '../../api/auth';
 import { ApiError } from '../../api/client';
-import { setTokens } from '../../api/tokenStorage';
 import './SignUp.css';
 
 const EMAIL_DOMAINS = ['naver.com', 'daum.net', 'hanmail.net', 'gmail.com', '직접 입력'];
@@ -17,8 +16,6 @@ function SignUp() {
   const navigate = useNavigate();
 
   const [nickname, setNickname] = useState('');
-  const [nicknameChecked, setNicknameChecked] = useState(false);
-  const [nicknameError, setNicknameError] = useState('');
 
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
@@ -30,22 +27,6 @@ function SignUp() {
 
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleNicknameChange = (e) => {
-    setNickname(e.target.value);
-    setNicknameChecked(false);
-    setNicknameError('');
-  };
-
-  const handleCheckNickname = () => {
-    if (nickname.length < 2 || nickname.length > 10) {
-      setNicknameChecked(false);
-      setNicknameError('닉네임은 2~10자로 입력해 주세요.');
-      return;
-    }
-    setNicknameError('');
-    setNicknameChecked(true);
-  };
 
   const handleSelectDomain = (value) => {
     setDomain(value);
@@ -73,9 +54,8 @@ function SignUp() {
     setError('');
     setIsSubmitting(true);
     try {
-      const data = await signup({ email: fullEmail, password, nickname });
-      setTokens({ accessToken: data.accessToken, refreshToken: data.refreshToken });
-      navigate(data.onboardingCompleted ? '/home' : '/onboarding/step1');
+      await signup({ email: fullEmail, password, nickname });
+      navigate('/');
     } catch (err) {
       const message = err instanceof ApiError ? SIGNUP_ERROR_MESSAGES[err.code] ?? err.message : '회원가입에 실패했어요. 다시 시도해 주세요.';
       setError(message);
@@ -96,35 +76,15 @@ function SignUp() {
       <form className="signup-form" onSubmit={handleSubmit}>
         <div className="signup-field">
           <label htmlFor="signup-nickname">닉네임</label>
-          <div className="signup-id-row">
-            <input
-              id="signup-nickname"
-              className="input"
-              type="text"
-              placeholder="닉네임을 입력해 주세요."
-              value={nickname}
-              onChange={handleNicknameChange}
-            />
-            <button
-              type="button"
-              className="btn signup-check-btn"
-              onClick={handleCheckNickname}
-              disabled={nicknameChecked}
-            >
-              중복 확인
-            </button>
-          </div>
-          <p
-            className={
-              nicknameError
-                ? 'signup-hint signup-hint-error'
-                : nicknameChecked
-                ? 'signup-hint signup-hint-success'
-                : 'signup-hint'
-            }
-          >
-            {nicknameError || (nicknameChecked ? '사용 가능한 닉네임입니다.' : '2~10자')}
-          </p>
+          <input
+            id="signup-nickname"
+            className="input"
+            type="text"
+            placeholder="닉네임을 입력해 주세요."
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value)}
+          />
+          <p className="signup-hint">4~12자/한글, 영문 소문자(숫자 조합 가능)</p>
         </div>
 
         <div className="signup-field">
@@ -144,7 +104,7 @@ function SignUp() {
             value={passwordConfirm}
             onChange={(e) => setPasswordConfirm(e.target.value)}
           />
-          <p className="signup-hint">8~20자</p>
+          <p className="signup-hint">8~20자/영문 대문자, 소문자, 숫자, 특수문자 중 2가지 이상 포함</p>
         </div>
 
         <div className="signup-field">
