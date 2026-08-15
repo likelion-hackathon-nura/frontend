@@ -28,7 +28,9 @@ import SkinLock from '../../assets/images/skin_lock_icon.svg'
 
 const Skin = () => {
 
-    const [isCheckedIn, setIsCheckedIn] = useState(true) //추후 수정 필요
+    // eslint-disable-next-line no-unused-vars
+    const [isCheckedIn, setIsCheckedIn] = useState(false)
+
     const [currentSlide, setCurrentSlide] = useState(1)
     const [touchStart, setTouchStart] = useState(null)
     const handleTouchStart = (e) => {
@@ -69,6 +71,7 @@ const Skin = () => {
     }
 
     // 1: 진정 케어, 2: 보습 케어, 3: 완료
+    // eslint-disable-next-line no-unused-vars
     const [currentStep, setCurrentStep] = useState(2)
 
     const recoverySteps = ['진정 케어', '보습 케어', '완료']

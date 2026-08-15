@@ -6,7 +6,6 @@ import FatigueLevel01 from '../../../assets/images/fatigue_level_1.svg'
 import FatigueLevel02 from '../../../assets/images/fatigue_level_2.svg'
 import FatigueLevel03 from '../../../assets/images/fatigue_level_3.svg'
 import FatigueLevel04 from '../../../assets/images/fatigue_level_4.svg'
-import FatigueLevel05 from '../../../assets/images/fatigue_level_5.svg'
 
 const CheckIn02 = ({ onNext }) => {
     return (
