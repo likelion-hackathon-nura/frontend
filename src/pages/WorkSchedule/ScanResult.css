@@ -1,0 +1,285 @@
+.scan-result-page {
+  position: relative;
+  max-width: 393px;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  background-image: none;
+  background-color: var(--color-white);
+
+  padding: 0 22px 40px;
+}
+
+.scan-result-header {
+  position: relative;
+  height: 68px;
+}
+
+.scan-result-back {
+  position: absolute;
+  left: 0;
+  top: 51px;
+
+  padding: 0;
+  border: 0;
+  background: none;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.scan-result-title {
+  margin-top: 15px;
+
+  font-size: var(--font-size-28);
+  font-weight: var(--font-bold);
+}
+
+.scan-result-subtitle {
+  margin-top: 2px;
+
+  font-size: 14px;
+  font-weight: var(  --font-regular);
+  color: #A89EA1;
+}
+
+.scan-result-card-wrap {
+  margin: 25px -22px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.scan-result-card {
+  width: 393px;
+  min-height: 683px;
+  box-sizing: border-box;
+  padding: 24px 22px 32px;
+
+  background-color: #f7f3f3;
+}
+
+.scan-result-calendar-card {
+  width: 350px;
+  height: 138px;
+  box-sizing: border-box;
+  padding: 20px 10px 16px 9px;
+
+  border-radius: 10px;
+  background-color: var(--color-white);
+}
+
+.scan-result-range {
+  text-align: center;
+
+  font-size: var(--font-size-15);
+  font-weight: var(--font-medium);
+}
+
+.scan-result-calendar-days {
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.scan-result-calendar-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.scan-result-calendar-label {
+  font-size: var(--font-size-15);
+  color: var(--color-text-secondary);
+}
+
+.scan-result-calendar-date {
+  font-size: var(--font-size-15);
+  font-weight: var(--font-medium);
+}
+
+.scan-result-calendar-icon {
+  margin-top: 5px;
+  width: 34px;
+  height: 20px;
+}
+
+.shift-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 26px;
+  border-radius: 100px;
+
+  font-size: 12px;
+  font-weight: var(--font-bold);
+  color: var(--color-white);
+}
+
+.shift-N {
+  background-color: #332c4c;
+}
+
+.shift-D {
+  background-color: #f6c6c6;
+  color: #7a4b4b;
+}
+
+.shift-E {
+  background-color: #9f8fc0;
+}
+
+.shift-OFF {
+  background-color: #f5e6a0;
+  color: #7a6a3d;
+}
+
+.scan-result-hint {
+  margin-top: 28px;
+
+  font-size: var(--font-size-12);
+  font-weight: var(--font-regular);
+  color: var(--color-text-secondary);
+}
+
+.scan-result-list-card {
+  width: 350px;
+  box-sizing: border-box;
+  margin-top: 10px;
+  padding: 0 16px;
+
+  border-radius: 16px;
+  background-color: var(--color-white);
+}
+
+.scan-result-row {
+  height: 52px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.scan-result-row + .scan-result-row {
+  border-top: 1px solid #f0edee;
+}
+
+.scan-result-check {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  border: 1.5px solid #f18e8e;
+  background-color: #ffeded;
+}
+
+.scan-result-check-mark {
+  position: relative;
+  width: 8px;
+  height: 5px;
+}
+
+.scan-result-check-mark::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 5px;
+  height: 8px;
+  border: solid #f18e8e;
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg) translate(-1px, -2px);
+}
+
+.scan-result-row-date {
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: var(--font-bold);
+}
+
+.scan-result-row-day {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: var(--font-regular);
+  color: var(--color-text-secondary);
+}
+
+.scan-result-shift-picker {
+  position: relative;
+}
+
+.scan-result-shift-toggle {
+  padding: 0;
+  border: 0;
+  background: none;
+  display: flex;
+  cursor: pointer;
+}
+
+.scan-result-shift-toggle.is-open svg path:last-child {
+  transform: rotate(180deg);
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
+.scan-result-shift-list {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: var(--z-dropdown);
+  width: 61px;
+
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.12);
+}
+
+.scan-result-shift-option {
+  width: 100%;
+  height: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+
+  font-size: 12px;
+  font-weight: var(--font-bold);
+}
+
+.shift-option-D {
+  background-color: #FFC7C7;
+  color: #D27373;
+}
+
+.shift-option-N {
+  background-color: #3F3D88;
+  color: #DCDAFF;
+}
+
+.shift-option-E {
+  background-color: #8B639B;
+  color: #F8E7FF;
+}
+
+.shift-option-OFF {
+  background-color: #FFFCE1;
+  color: #480000;
+}
+
+.scan-result-submit {
+  margin-top: 30px;
+  height: 51px;
+}
+
+.scan-result-submit:active {
+  background-color: #341a1a;
+}
