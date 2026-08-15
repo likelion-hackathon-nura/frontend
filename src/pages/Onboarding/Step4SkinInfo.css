@@ -203,6 +203,14 @@
   transform: rotate(45deg);
 }
 
+.step4-error {
+  margin-top: 16px;
+
+  font-size: 13px;
+  font-weight: var(--font-medium);
+  color: #D27373;
+}
+
 .step4-next {
   margin-top: 34px;
   height: 52px;

@@ -56,6 +56,15 @@
   color: #d9d2d4;
 }
 
+.login-error {
+  width: 320px;
+  margin: -2px 0 0;
+
+  font-size: 13px;
+  font-weight: var(--font-medium);
+  color: #D27373;
+}
+
 .login-form .btn {
   width: 320px;
   height: 48px;

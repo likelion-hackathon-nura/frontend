@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TimePickerModal from '../../components/TimePickerModal/TimePickerModal';
+import { useOnboarding } from './OnboardingContext';
 import { ReactComponent as BackIcon } from '../../assets/images/backbutton.svg';
 import { ReactComponent as DayIcon } from '../../assets/images/day.svg';
 import { ReactComponent as EveningIcon } from '../../assets/images/evening.svg';
@@ -23,6 +24,7 @@ function ChevronDown() {
 
 function Step1WorkSchedule() {
   const navigate = useNavigate();
+  const { updateOnboarding } = useOnboarding();
   const [schedule, setSchedule] = useState({
     day: { checkIn: '07:00', checkOut: '15:30' },
     evening: { checkIn: '13:00', checkOut: '23:30' },
@@ -39,6 +41,18 @@ function Step1WorkSchedule() {
       },
     }));
     setActiveField(null);
+  };
+
+  const handleNext = () => {
+    updateOnboarding({
+      shiftDStart: schedule.day.checkIn,
+      shiftDEnd: schedule.day.checkOut,
+      shiftEStart: schedule.evening.checkIn,
+      shiftEEnd: schedule.evening.checkOut,
+      shiftNStart: schedule.night.checkIn,
+      shiftNEnd: schedule.night.checkOut,
+    });
+    navigate('/onboarding/step2');
   };
 
   return (
@@ -103,7 +117,7 @@ function Step1WorkSchedule() {
         <button
           type="button"
           className="btn btn-primary btn-full step1-next"
-          onClick={() => navigate('/onboarding/step2')}
+          onClick={handleNext}
         >
           다음
         </button>

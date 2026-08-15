@@ -127,6 +127,11 @@
   color: var(--color-primary);
 }
 
+.signup-hint-error {
+  margin-top: -6px;
+  color: #D27373;
+}
+
 .signup-email-row {
   display: flex;
   align-items: center;

@@ -1,7 +1,8 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
 import Login from './pages/Login/Login';
 import Home from './pages/Home/Home';
 import SignUp from './pages/Login/SignUp';
+import { OnboardingProvider } from './pages/Onboarding/OnboardingContext';
 import Step1WorkSchedule from './pages/Onboarding/Step1WorkSchedule';
 import Step2SleepMeal from './pages/Onboarding/Step2SleepMeal';
 import Step3Activity from './pages/Onboarding/Step3Activity';
@@ -18,6 +19,14 @@ import RefreshTimeWarning from './pages/Schedule/RefreshTimeWarning';
 import AiRecommendation from './pages/Schedule/AiRecommendation';
 import ScheduleComplete from './pages/Schedule/ScheduleComplete';
 
+function OnboardingLayout() {
+  return (
+    <OnboardingProvider>
+      <Outlet />
+    </OnboardingProvider>
+  );
+}
+
 function App() {
   return (
     <BrowserRouter>
@@ -25,11 +34,13 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/home" element={<Home />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/onboarding/step1" element={<Step1WorkSchedule />} />
-        <Route path="/onboarding/step2" element={<Step2SleepMeal />} />
-        <Route path="/onboarding/step3" element={<Step3Activity />} />
-        <Route path="/onboarding/step4" element={<Step4SkinInfo />} />
-        <Route path="/onboarding/complete" element={<Complete />} />
+        <Route path="/onboarding" element={<OnboardingLayout />}>
+          <Route path="step1" element={<Step1WorkSchedule />} />
+          <Route path="step2" element={<Step2SleepMeal />} />
+          <Route path="step3" element={<Step3Activity />} />
+          <Route path="step4" element={<Step4SkinInfo />} />
+          <Route path="complete" element={<Complete />} />
+        </Route>
         <Route path="/report" element={<Report />} />
         <Route path="/work-schedule/scan-loading" element={<ScanLoading />} />
         <Route path="/work-schedule/scan-result" element={<ScanResult />} />
