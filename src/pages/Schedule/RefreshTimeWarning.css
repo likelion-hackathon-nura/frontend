@@ -1,0 +1,134 @@
+.refresh-warning-page {
+  position: relative;
+  max-width: 393px;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  background-image: none;
+  padding: 0 22px 40px;
+}
+
+.refresh-warning-header {
+  position: relative;
+  height: 68px;
+}
+
+.refresh-warning-back {
+  position: absolute;
+  left: 0;
+  top: 51px;
+
+  padding: 0;
+  border: 0;
+  background: none;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.refresh-warning-title {
+  margin-top: 21px;
+
+  font-size: 24px;
+  font-weight: var(--font-semibold);
+  line-height: 1.4;
+}
+
+.refresh-warning-title-highlight {
+  color: #F18E8E;
+}
+
+.refresh-warning-section {
+  margin: 21px -22px 0;
+  padding: 38px 22px 32px;
+  box-sizing: border-box;
+  background-color: #F7F3F3;
+}
+
+.refresh-warning-chart-wrap {
+  margin-top: 0;
+}
+
+.refresh-warning-chart {
+  display: block;
+}
+
+.refresh-warning-chart-unit {
+  font-size: 8px;
+  font-weight: var(--font-regular);
+  fill: #A89EA1;
+}
+
+.refresh-warning-chart-axis {
+  font-size: 12px;
+  font-weight: var(--font-regular);
+  fill: #A89EA1;
+}
+
+.refresh-warning-chart-label {
+  font-size: 16px;
+  font-weight: var(--font-regular);
+  fill: #7B7578;
+}
+
+.refresh-warning-chart-label.is-highlight {
+  fill: #EC8181;
+  font-size: var(--font-size-20);
+  font-weight: var(--font-bold);
+}
+
+.refresh-warning-box {
+  margin-top: 60px;
+  padding: 18px 16px;
+
+  display: flex;
+  gap: 10px;
+
+  border-radius: 12px;
+  background-color: #FFBEBE;
+}
+
+.refresh-warning-box p {
+  font-size: 16px;
+  font-weight: var(--font-medium);
+  line-height: 1.5;
+  color: #8F3535;
+}
+
+.refresh-warning-box p span {
+  font-size: 14px;
+  font-weight: var(--font-regular);
+  color: var(--color-text-secondary);
+}
+
+.refresh-warning-actions {
+  margin-top: 149px;
+  display: flex;
+  gap: 14px;
+}
+
+.refresh-warning-btn {
+  flex: 1;
+  width: 168px;
+  height: 51px;
+  border-radius: 10px;
+
+  font-size: 15px;
+  font-weight: var(--font-medium);
+}
+
+.refresh-warning-btn.btn-secondary {
+  background-color: #FFECC7;
+  color: #563D3D;
+}
+
+.refresh-warning-btn.btn-primary {
+  color: #FFFFFF;
+}
+
+.refresh-warning-btn.btn-secondary:active {
+  background-color: #FBDEA3;
+}
+
+.refresh-warning-btn.btn-primary:active {
+  background-color: #341A1A;
+}

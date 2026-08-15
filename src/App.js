@@ -12,6 +12,11 @@ import ScanLoading from './pages/WorkSchedule/ScanLoading';
 import ScanResult from './pages/WorkSchedule/ScanResult';
 import RegisterComplete from './pages/WorkSchedule/RegisterComplete';
 import ManualEntry from './pages/WorkSchedule/ManualEntry';
+import CategorySelect from './pages/Schedule/CategorySelect';
+import DateTimeInput from './pages/Schedule/DateTimeInput';
+import RefreshTimeWarning from './pages/Schedule/RefreshTimeWarning';
+import AiRecommendation from './pages/Schedule/AiRecommendation';
+import ScheduleComplete from './pages/Schedule/ScheduleComplete';
 
 function App() {
   return (
@@ -30,6 +35,11 @@ function App() {
         <Route path="/work-schedule/scan-result" element={<ScanResult />} />
         <Route path="/work-schedule/register-complete" element={<RegisterComplete />} />
         <Route path="/work-schedule/manual-entry" element={<ManualEntry />} />
+        <Route path="/schedule/category" element={<CategorySelect />} />
+        <Route path="/schedule/datetime" element={<DateTimeInput />} />
+        <Route path="/schedule/warning" element={<RefreshTimeWarning />} />
+        <Route path="/schedule/recommend" element={<AiRecommendation />} />
+        <Route path="/schedule/complete" element={<ScheduleComplete />} />
       </Routes>
     </BrowserRouter>
   );

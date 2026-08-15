@@ -32,6 +32,7 @@
 
   --color-text-primary: #000000;
   --color-text-secondary: #7B7578;
+  --color-disabled-bg: #F0EDEE;
 
   /* Background */
   --gradient-background: linear-gradient(255deg, rgba(255, 252, 225, 0.4) 0%, rgba(255, 252, 225, 0) 100%),
