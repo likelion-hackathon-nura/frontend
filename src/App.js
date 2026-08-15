@@ -9,6 +9,7 @@ import Complete from './pages/Onboarding/Complete';
 import Report from './pages/Report/Report';
 import Skin from './pages/Skin/Skin'
 import CheckIn from './pages/Skin/CheckIn'
+import Recovery from './pages/Skin/Recovery'
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/report" element={<Report />} />
         <Route path="/skin" element={<Skin />} />
         <Route path="/checkin" element={<CheckIn />} />
+        <Route path="/recovery" element={<Recovery />} />
       </Routes>
     </BrowserRouter>
   );

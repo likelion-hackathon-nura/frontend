@@ -64,6 +64,9 @@ const Skin = () => {
     const goToCheckIn = () => {
         navigate('/checkin')
     }
+    const goToRecovery = () => {
+        navigate('/recovery')
+    }
 
     // 1: 진정 케어, 2: 보습 케어, 3: 완료
     const [currentStep, setCurrentStep] = useState(2)
@@ -85,7 +88,7 @@ const Skin = () => {
                     <div className="skin_m01_box">
                         <p className='skin_m01_box_1'>3분 회복 모드</p>
                         <p className='skin_m01_box_2'>체크인 기록을 바탕으로<br />오늘의 루틴을 제안해드려요.</p>
-                        <button className='skin_m01_box_4'>회복 모드 시작하기<img src={NextArrow} alt="" /></button>
+                        <button className='skin_m01_box_4' onClick={goToRecovery}>회복 모드 시작하기<img src={NextArrow} alt="" /></button>
                     </div>
                 </div>
 

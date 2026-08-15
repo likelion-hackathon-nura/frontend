@@ -17,10 +17,6 @@
     flex-direction: column;
 }
 
-.checkin_bot_btn {
-    margin-bottom: 30px;
-}
-
 .prev_btn{
     width: 8px;
 }
@@ -51,6 +47,7 @@
     letter-spacing: -2%;
     color: white;
     margin-top: auto;
+    margin-bottom: 30px;
 }
 
 .checkin_wrap img{

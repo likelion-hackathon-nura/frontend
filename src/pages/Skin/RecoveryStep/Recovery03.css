@@ -1,0 +1,182 @@
+.recovery03_wrap {
+    width: 100%;
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+}
+
+/* 완료 안내 */
+
+.recovery03_top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding-top: 18px;
+    padding-right: 22px;
+}
+
+.recovery03_check {
+    width: 62px;
+    height: 62px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+
+    background: linear-gradient(
+        145deg,
+        #8fdcd2,
+        rgba(255, 255, 255, 0.8)
+    );
+
+    box-shadow: 0 4px 12px rgba(96, 194, 180, 0.25);
+}
+
+.recovery03_check img {
+    width: 34px;
+}
+
+.recovery03_title {
+    margin-top: 18px;
+
+    font-size: 21px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    text-align: center;
+}
+
+.recovery03_description {
+    margin-top: 10px;
+
+    font-size: 12px;
+    line-height: 1.6;
+    letter-spacing: -0.02em;
+    text-align: center;
+    color: #7b7578;
+}
+
+/* 설문 흰색 영역 */
+
+.recovery03_main {
+    width: calc(100% + 22px);
+    margin-top: 24px;
+    margin-left: -22px;
+    margin-bottom: -30px;
+    padding: 22px 22px 30px;
+
+    flex: 1;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+
+    border-radius: 32px 32px 0 0;
+    background-color: #ffffff;
+}
+
+.recovery03_question {
+    padding-bottom: 17px;
+}
+
+.recovery03_question + .recovery03_question {
+    padding-top: 17px;
+    border-top: 1px solid #f0edee;
+}
+
+.recovery03_question h2 {
+    padding-left: 8px;
+
+    border-left: 3px solid #60c2b4;
+
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.02em;
+}
+
+.recovery03_question_description {
+    margin-top: 8px;
+
+    font-size: 10px;
+    color: #999294;
+}
+
+/* 선택 버튼 */
+
+.recovery03_options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+
+    margin-top: 13px;
+}
+
+.recovery03_options button {
+    height: 39px;
+    padding: 0;
+
+    border: 1px solid #f0edee;
+    border-radius: 9px;
+
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 400;
+    color: #7b7578;
+    background-color: #f8f7f7;
+
+    cursor: pointer;
+}
+
+.recovery03_options button.active {
+    border-color: #60c2b4;
+
+    font-weight: 500;
+    color: #4aa99b;
+    background-color: #e3f8f5;
+}
+
+/* 자세한 피드백 */
+
+.recovery03_main .recovery03_feedback_btn {
+    width: fit-content;
+    height: auto;
+
+    margin: 0 auto 18px;
+    padding: 0;
+
+    border: 0;
+
+    font-family: inherit;
+    font-size: 11px;
+    color: #999294;
+    background: none;
+
+    cursor: pointer;
+}
+
+/* 완료 버튼 */
+
+.recovery03_main .recovery03_complete_btn {
+    width: 100%;
+    height: 51px;
+
+    margin-top: auto;
+    padding: 0;
+    flex-shrink: 0;
+
+    border: 0;
+    border-radius: 10px;
+
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    color: #ffffff;
+    background-color: #2e3a38;
+
+    cursor: pointer;
+}
