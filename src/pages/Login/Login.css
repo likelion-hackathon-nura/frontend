@@ -46,14 +46,28 @@
 
   background-color: var(--color-white);
   border: 1px solid #f0edee;
+  caret-color: #F18E8E;
 
   font-family: var(--font-family-base);
   font-size: var(--font-size-15);
   font-weight: var(--font-medium);
 }
 
+.login-form .input:focus-visible {
+  outline: none;
+}
+
 .login-form .input::placeholder {
   color: #d9d2d4;
+}
+
+.login-error {
+  width: 320px;
+  margin: -2px 0 0;
+
+  font-size: 13px;
+  font-weight: var(--font-medium);
+  color: #D27373;
 }
 
 .login-form .btn {

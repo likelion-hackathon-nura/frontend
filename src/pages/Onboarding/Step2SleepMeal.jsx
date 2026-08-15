@@ -4,6 +4,7 @@ import { ReactComponent as BackIcon } from '../../assets/images/backbutton.svg';
 import { ReactComponent as RegularIcon } from '../../assets/images/regular.svg';
 import { ReactComponent as SometimesSkipIcon } from '../../assets/images/sometimes-skip.svg';
 import { ReactComponent as OftenSkipIcon } from '../../assets/images/often-skip.svg';
+import { useOnboarding, MEAL_PATTERN_MAP } from './OnboardingContext';
 import './Step2SleepMeal.css';
 
 const SLEEP_MIN = 4;
@@ -32,10 +33,19 @@ const MEAL_OPTIONS = [
 
 function Step2SleepMeal() {
   const navigate = useNavigate();
+  const { updateOnboarding } = useOnboarding();
   const [sleepHours, setSleepHours] = useState(7);
   const [mealPattern, setMealPattern] = useState(null);
 
   const percent = ((sleepHours - SLEEP_MIN) / (SLEEP_MAX - SLEEP_MIN)) * 100;
+
+  const handleNext = () => {
+    updateOnboarding({
+      targetSleepMinutes: sleepHours * 60,
+      mealPattern: mealPattern ? MEAL_PATTERN_MAP[mealPattern] : null,
+    });
+    navigate('/onboarding/step3');
+  };
 
   return (
     <div className="page step2-page">
@@ -111,7 +121,7 @@ function Step2SleepMeal() {
 
           <div className="step2-meal-section">
             <h2 className="step2-meal-title">
-              식사 패턴 <span className="step2-meal-required">(선택)</span>
+              식사 패턴 <span className="step2-meal-required">(필수)</span>
             </h2>
             <p className="step2-meal-subtitle">평소 식사 패턴에 가장 가까운 것을 선택해 주세요.</p>
 
@@ -138,7 +148,8 @@ function Step2SleepMeal() {
           <button
             type="button"
             className="btn btn-primary btn-full step2-next"
-            onClick={() => navigate('/onboarding/step3')}
+            onClick={handleNext}
+            disabled={!mealPattern}
           >
             다음
           </button>

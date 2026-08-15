@@ -9,6 +9,7 @@ import { ReactComponent as AnimalsIcon } from '../../assets/images/animals.svg';
 import { ReactComponent as WalkingIcon } from '../../assets/images/walking.svg';
 import { ReactComponent as YogaIcon } from '../../assets/images/yoga.svg';
 import { ReactComponent as EtcIcon } from '../../assets/images/etc.svg';
+import { useOnboarding, REST_ACTIVITY_MAP } from './OnboardingContext';
 import './Step3Activity.css';
 
 const ACTIVITIES = [
@@ -24,12 +25,20 @@ const ACTIVITIES = [
 
 function Step3Activity() {
   const navigate = useNavigate();
+  const { updateOnboarding } = useOnboarding();
   const [selected, setSelected] = useState([]);
 
   const toggle = (key) => {
-    setSelected((prev) =>
-      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
-    );
+    setSelected((prev) => {
+      if (prev.includes(key)) return prev.filter((k) => k !== key);
+      if (prev.length >= 3) return prev;
+      return [...prev, key];
+    });
+  };
+
+  const handleNext = () => {
+    updateOnboarding({ restActivities: selected.map((key) => REST_ACTIVITY_MAP[key]) });
+    navigate('/onboarding/step4');
   };
 
   return (
@@ -56,7 +65,7 @@ function Step3Activity() {
 
       <div className="step3-card-wrap">
         <div className="step3-card">
-          <p className="step3-hint">복수 선택 가능</p>
+          <p className="step3-hint">1~3개 선택 (필수)</p>
 
           <div className="step3-grid">
             {ACTIVITIES.map((item) => (
@@ -77,7 +86,8 @@ function Step3Activity() {
           <button
             type="button"
             className="btn btn-primary btn-full step3-next"
-            onClick={() => navigate('/onboarding/step4')}
+            onClick={handleNext}
+            disabled={selected.length === 0}
           >
             다음
           </button>

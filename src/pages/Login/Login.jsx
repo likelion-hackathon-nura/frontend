@@ -1,15 +1,38 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { login } from '../../api/auth';
+import { ApiError } from '../../api/client';
+import { setTokens } from '../../api/tokenStorage';
 import './Login.css';
+
+const LOGIN_ERROR_MESSAGES = {
+  AUTH_INVALID_LOGIN_REQUEST: '이메일과 비밀번호를 입력해 주세요.',
+  AUTH_INVALID_CREDENTIALS: '이메일 또는 비밀번호가 올바르지 않습니다.',
+};
 
 function Login() {
   const navigate = useNavigate();
-  const [id, setId] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate('/onboarding/step1');
+    if (isSubmitting) return;
+
+    setError('');
+    setIsSubmitting(true);
+    try {
+      const data = await login({ email, password });
+      setTokens({ accessToken: data.accessToken, refreshToken: data.refreshToken });
+      navigate(data.onboardingCompleted ? '/home' : '/onboarding/step1');
+    } catch (err) {
+      const message = err instanceof ApiError ? LOGIN_ERROR_MESSAGES[err.code] ?? err.message : '로그인에 실패했어요. 다시 시도해 주세요.';
+      setError(message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -19,10 +42,10 @@ function Login() {
       <form className="login-form" onSubmit={handleSubmit}>
         <input
           className="input"
-          type="text"
-          placeholder="아이디를 입력해 주세요."
-          value={id}
-          onChange={(e) => setId(e.target.value)}
+          type="email"
+          placeholder="이메일을 입력해 주세요."
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
         <input
           className="input"
@@ -31,8 +54,9 @@ function Login() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button type="submit" className="btn btn-primary btn-full">
-          로그인
+        {error && <p className="login-error">{error}</p>}
+        <button type="submit" className="btn btn-primary btn-full" disabled={isSubmitting}>
+          {isSubmitting ? '로그인 중...' : '로그인'}
         </button>
       </form>
 

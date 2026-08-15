@@ -4,6 +4,9 @@ import { ReactComponent as BackIcon } from '../../assets/images/backbutton.svg';
 import { ReactComponent as Stage1Icon } from '../../assets/images/stage-1.svg';
 import { ReactComponent as Stage2Icon } from '../../assets/images/stage-2.svg';
 import { ReactComponent as Stage3Icon } from '../../assets/images/stage-3.svg';
+import { useOnboarding, SENSITIVITY_MAP, SKIN_TYPE_MAP, SKIN_CONCERN_MAP } from './OnboardingContext';
+import { submitOnboarding } from '../../api/auth';
+import { ApiError } from '../../api/client';
 import './Step4SkinInfo.css';
 
 const SENSITIVITY_LEVELS = [
@@ -34,9 +37,12 @@ const MAX_CONCERNS = 3;
 
 function Step4SkinInfo() {
   const navigate = useNavigate();
+  const { data, updateOnboarding } = useOnboarding();
   const [sensitivity, setSensitivity] = useState(null);
   const [skinType, setSkinType] = useState(null);
   const [concerns, setConcerns] = useState([]);
+  const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const toggleConcern = (key) => {
     setConcerns((prev) => {
@@ -48,6 +54,29 @@ function Step4SkinInfo() {
       }
       return [...prev, key];
     });
+  };
+
+  const handleNext = async () => {
+    if (isSubmitting) return;
+
+    const payload = {
+      ...data,
+      sensitivityLevel: sensitivity ? SENSITIVITY_MAP[sensitivity] : null,
+      skinType: skinType ? SKIN_TYPE_MAP[skinType] : null,
+      skinConcerns: concerns.map((key) => SKIN_CONCERN_MAP[key]),
+    };
+    updateOnboarding(payload);
+
+    setError('');
+    setIsSubmitting(true);
+    try {
+      await submitOnboarding(payload);
+      navigate('/onboarding/complete');
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : '온보딩 저장에 실패했어요. 다시 시도해 주세요.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -112,7 +141,7 @@ function Step4SkinInfo() {
           </div>
 
           <h2 className="step4-section-title step4-section-title-concerns">
-            피부 고민 <span className="step4-section-hint">(최대 3개까지 선택 가능)</span>
+            피부 고민 <span className="step4-section-hint">(1~3개 선택, 필수)</span>
           </h2>
           <div className="step4-grid">
             {SKIN_CONCERNS.map((concern) => (
@@ -130,12 +159,15 @@ function Step4SkinInfo() {
             ))}
           </div>
 
+          {error && <p className="step4-error">{error}</p>}
+
           <button
             type="button"
             className="btn btn-primary btn-full step4-next"
-            onClick={() => navigate('/onboarding/complete')}
+            onClick={handleNext}
+            disabled={isSubmitting || !sensitivity || !skinType || concerns.length === 0}
           >
-            다음
+            {isSubmitting ? '저장 중...' : '다음'}
           </button>
         </div>
       </div>
