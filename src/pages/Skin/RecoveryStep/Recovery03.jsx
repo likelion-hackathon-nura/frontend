@@ -2,7 +2,11 @@ import React, { useState } from 'react'
 
 import './Recovery03.css'
 
-import CheckWhite from '../../../assets/images/check_white.svg'
+import RecoveryFinIcon from '../../../assets/images/checkin_fin_icon.svg'
+import TitleLine from '../../../assets/images/recovery_title_icon.svg'
+import NextArrow from '../../../assets/images/recovery_next_arrow.svg'
+
+
 
 const Recovery03 = ({ onComplete }) => {
     const [completed, setCompleted] = useState('yes')
@@ -12,24 +16,21 @@ const Recovery03 = ({ onComplete }) => {
 
     return (
         <div className="recovery03_wrap">
+
             <div className="recovery03_top">
-                <div className="recovery03_check">
-                    <img src={CheckWhite} alt="회복 모드 완료" />
-                </div>
-
-                <p className="recovery03_title">
-                    3분 회복 모드가 완료되었어요 👋🏻
-                </p>
-
-                <p className="recovery03_description">
-                    더 나은 회복 루틴을 추천해드릴 수 있도록,<br />
-                    현재 상태를 간단히 알려주세요.
-                </p>
+                <img src={RecoveryFinIcon} alt="회복 모드 완료" className="recovery03_check" />
+                <p className="recovery03_title">3분 회복 모드가 완료되었어요👋🏻</p>
+                <p className="recovery03_description">더 나은 회복 루틴을 추천해드릴 수 있도록,<br />현재 상태를 간단히 알려주세요.</p>
             </div>
 
             <div className="recovery03_main">
                 <section className="recovery03_question">
-                    <h2>3분 회복 모드를 모두 이행했나요?</h2>
+
+                    <div className="recovery03_q_top">
+                        <img src={TitleLine} alt="" />
+                        <p>3분 회복 모드를 모두 이행했나요?</p>
+                    </div>
+
 
                     <div className="recovery03_options">
                         <button
@@ -51,7 +52,10 @@ const Recovery03 = ({ onComplete }) => {
                 </section>
 
                 <section className="recovery03_question">
-                    <h2>현재 상태가 어떤지 체크해주세요.</h2>
+                    <div className="recovery03_q_top">
+                        <img src={TitleLine} alt="" />
+                        <p>현재 상태가 어떤지 체크해주세요.</p>
+                    </div>
 
                     <div className="recovery03_options">
                         <button
@@ -81,7 +85,10 @@ const Recovery03 = ({ onComplete }) => {
                 </section>
 
                 <section className="recovery03_question">
-                    <h2>다음 추천에 반영할까요?</h2>
+                    <div className="recovery03_q_top">
+                        <img src={TitleLine} alt="" />
+                        <p>다음 추천에 반영할까요?</p>
+                    </div>
 
                     <div className="recovery03_options">
                         <button
@@ -111,7 +118,10 @@ const Recovery03 = ({ onComplete }) => {
                 </section>
 
                 <section className="recovery03_question">
-                    <h2>해당 회복 모드를 스크랩할까요?</h2>
+                    <div className="recovery03_q_top">
+                        <img src={TitleLine} alt="" />
+                        <p>해당 회복 모드를 스크랩할까요?</p>
+                    </div>
 
                     <p className="recovery03_question_description">
                         스크랩한 루틴은 마이페이지에서 확인하실 수 있어요.
@@ -140,7 +150,7 @@ const Recovery03 = ({ onComplete }) => {
                     type="button"
                     className="recovery03_feedback_btn"
                 >
-                    피드백 자세히 남기기 〉
+                    피드백 자세히 남기기 <img src={NextArrow} alt="" />
                 </button>
 
                 <button
