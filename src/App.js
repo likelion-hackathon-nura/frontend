@@ -21,6 +21,7 @@ import DateTimeInput from './pages/Schedule/DateTimeInput';
 import RefreshTimeWarning from './pages/Schedule/RefreshTimeWarning';
 import AiRecommendation from './pages/Schedule/AiRecommendation';
 import ScheduleComplete from './pages/Schedule/ScheduleComplete';
+import Mypage from './pages/Mypage/Mypage'
 
 function OnboardingLayout() {
   return (
@@ -57,6 +58,7 @@ function App() {
         <Route path="/schedule/warning" element={<RefreshTimeWarning />} />
         <Route path="/schedule/recommend" element={<AiRecommendation />} />
         <Route path="/schedule/complete" element={<ScheduleComplete />} />
+        <Route path="/mypage" element={<Mypage />} />
       </Routes>
     </BrowserRouter>
   );
