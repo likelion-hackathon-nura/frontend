@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import BottomNav from '../../components/BottomNav/BottomNav'
+import { getCheckinStatus, getTodaySkin } from '../../api/skin'
 
 import '../Skin/Skin.css'
 
@@ -25,11 +26,42 @@ import SkinTime from '../../assets/images/skin_time.svg'
 import SkinLock from '../../assets/images/skin_lock_icon.svg'
 
 
+const getTodayDate = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0]
+const DAY_LABELS = { MON: '월', TUE: '화', WED: '수', THU: '목', FRI: '금', SAT: '토', SUN: '일' }
 
 const Skin = () => {
 
-    // eslint-disable-next-line no-unused-vars
     const [isCheckedIn, setIsCheckedIn] = useState(false)
+
+    const [streakDays, setStreakDays] = useState(0)
+
+    useEffect(() => {
+        const loadCheckinStatus = async () => {
+            try {
+                const data = await getCheckinStatus(getTodayDate())
+                setIsCheckedIn(!data.can_checkin)
+            } catch (error) {
+                console.error('체크인 상태 조회 실패:', error)
+            }
+        }
+
+        loadCheckinStatus()
+    }, [])
+
+    useEffect(() => {
+        const loadTodaySkin = async () => {
+            try {
+                const data = await getTodaySkin()
+                setIsCheckedIn(data.is_checked_in)
+                setStreakDays(data.streak_days)
+                setWeekData(data.weekly_records.map(item => ({ day: DAY_LABELS[item.day_of_week], status: item.status.toLowerCase() })))
+            } catch (error) {
+                console.error('오늘의 피부 상태 조회 실패:', error)
+            }
+        }
+
+        loadTodaySkin()
+    }, [])
 
     const [currentSlide, setCurrentSlide] = useState(1)
     const [touchStart, setTouchStart] = useState(null)
@@ -51,21 +83,11 @@ const Skin = () => {
         setTouchStart(null)
     }
 
-    const weekData = [
-        { day: '월', status: 'missed' },
-        { day: '화', status: 'completed' },
-        { day: '수', status: 'completed' },
-        { day: '목', status: 'completed' },
-        { day: '금', status: 'none' },
-        { day: '토', status: 'none' },
-        { day: '일', status: 'none' },
-    ]
+    const [weekData, setWeekData] = useState([])
 
     const navigate = useNavigate()
 
-    const goToCheckIn = () => {
-        navigate('/checkin')
-    }
+    const goToCheckIn = () => navigate('/checkin')
     const goToRecovery = () => {
         navigate('/recovery')
     }
@@ -98,7 +120,7 @@ const Skin = () => {
                 <div className="skin_main02">
                     <div className="skin_m02_txt">
                         <p>기록을 꾸준히 이어가고 있어요!</p>
-                        <span>연속 기록 3일 째</span>
+                        <span>연속 기록 {streakDays}일 째</span>
                     </div>
 
                     <div className="skin_week">
