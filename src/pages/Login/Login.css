@@ -30,7 +30,10 @@
   height: 145px;
   margin: 130px auto 50px;
 
-  background-color: #f2f2f2;
+  background-image: url('../../assets/images/nura-logo.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .login-form {
