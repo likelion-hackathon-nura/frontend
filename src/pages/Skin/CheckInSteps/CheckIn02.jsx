@@ -7,7 +7,7 @@ import FatigueLevel02 from '../../../assets/images/fatigue_level_2.svg'
 import FatigueLevel03 from '../../../assets/images/fatigue_level_3.svg'
 import FatigueLevel04 from '../../../assets/images/fatigue_level_4.svg'
 
-const CheckIn02 = ({ onNext }) => {
+const CheckIn02 = ({ tightness, redness, onChange, onNext, }) => {
     return (
         <div className="checkin02_wrap">
             <div className="checkin02_top">
@@ -21,22 +21,34 @@ const CheckIn02 = ({ onNext }) => {
                 </div>
 
                 <div className="checkin02_m_1">
-                    <div className="checkin02_m_1_box">
+                    <div
+                        className={`checkin02_m_1_box ${tightness === 'VERY_LOW' ? 'span' : ''}`}
+                        onClick={() => onChange('tightness', 'VERY_LOW')}
+                    >
                         <img src={FatigueLevel01} alt="" />
                         <p>없음</p>
                     </div>
 
-                    <div className="checkin02_m_1_box">
+                    <div
+                        className={`checkin02_m_1_box ${tightness === 'LOW' ? 'span' : ''}`}
+                        onClick={() => onChange('tightness', 'LOW')}
+                    >
                         <img src={FatigueLevel02} alt="" />
                         <p>약간</p>
                     </div>
 
-                    <div className="checkin02_m_1_box">
+                    <div
+                        className={`checkin02_m_1_box ${tightness === 'MODERATE' ? 'span' : ''}`}
+                        onClick={() => onChange('tightness', 'MODERATE')}
+                    >
                         <img src={FatigueLevel03} alt="" />
                         <p>보통</p>
                     </div>
 
-                    <div className="checkin02_m_1_box span">
+                    <div
+                        className={`checkin02_m_1_box ${tightness === 'HIGH' ? 'span' : ''}`}
+                        onClick={() => onChange('tightness', 'HIGH')}
+                    >
                         <img src={FatigueLevel04} alt="" />
                         <p>심함</p>
                     </div>
@@ -48,28 +60,46 @@ const CheckIn02 = ({ onNext }) => {
                 </div>
 
                 <div className="checkin02_m_2">
-                    <div className="checkin02_m_2_box">
+                    <div
+                        className={`checkin02_m_2_box ${redness === 'VERY_LOW' ? 'span' : ''}`}
+                        onClick={() => onChange('redness', 'VERY_LOW')}
+                    >
                         <img src={FatigueLevel01} alt="" />
                         <p>없음</p>
                     </div>
 
-                    <div className="checkin02_m_2_box">
+                    <div
+                        className={`checkin02_m_2_box ${redness === 'LOW' ? 'span' : ''}`}
+                        onClick={() => onChange('redness', 'LOW')}
+                    >
                         <img src={FatigueLevel02} alt="" />
                         <p>약간</p>
                     </div>
 
-                    <div className="checkin02_m_2_box">
+                    <div
+                        className={`checkin02_m_2_box ${redness === 'MODERATE' ? 'span' : ''}`}
+                        onClick={() => onChange('redness', 'MODERATE')}
+                    >
                         <img src={FatigueLevel03} alt="" />
                         <p>보통</p>
                     </div>
 
-                    <div className="checkin02_m_2_box span">
+                    <div
+                        className={`checkin02_m_2_box ${redness === 'HIGH' ? 'span' : ''}`}
+                        onClick={() => onChange('redness', 'HIGH')}
+                    >
                         <img src={FatigueLevel04} alt="" />
                         <p>심함</p>
                     </div>
                 </div>
 
-                <button onClick={onNext} className='checkin_bot_btn'>다음</button>
+                <button
+                    onClick={onNext}
+                    disabled={tightness === null || redness === null}
+                    className='checkin_bot_btn'
+                >
+                    다음
+                </button>
 
             </div>
 

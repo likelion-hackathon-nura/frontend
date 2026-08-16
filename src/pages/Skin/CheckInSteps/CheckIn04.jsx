@@ -2,24 +2,18 @@ import React, { useEffect, useState } from 'react'
 
 import './CheckIn04.css'
 
-const CheckIn04 = ({ onNext }) => {
+const CheckIn04 = ({ isComplete, onNext }) => {
     const [progress, setProgress] = useState(0)
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            setProgress(prev => {
-                const nextProgress = Math.min(prev + 2, 100)
+        if (isComplete) {
+            setProgress(100)
+            return
+        }
 
-                if (nextProgress === 100) {
-                    clearInterval(interval)
-                }
-
-                return nextProgress
-            })
-        }, 100)
-
+        const interval = setInterval(() => setProgress(prev => Math.min(prev + 2, 90)), 100)
         return () => clearInterval(interval)
-    }, [])
+    }, [isComplete])
 
     useEffect(() => {
         if (progress !== 100) return
