@@ -1,6 +1,13 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import BottomNav from '../../components/BottomNav/BottomNav';
+import { createOrGetTodayHome, getSchedules } from '../../api/home';
+import { ApiError } from '../../api/client';
 import { ReactComponent as NightTopIcon } from '../../assets/images/night-today.svg';
+import { ReactComponent as DayTopIcon } from '../../assets/images/day-today.svg';
+import { ReactComponent as EveningTopIcon } from '../../assets/images/evening-today.svg';
+import { ReactComponent as OffTopIcon } from '../../assets/images/off-today.svg';
 import { ReactComponent as SocialIcon } from '../../assets/images/social-time.svg';
 import { ReactComponent as RefreshIcon } from '../../assets/images/refresh-time.svg';
 import { ReactComponent as MytimeIcon } from '../../assets/images/my-time.svg';
@@ -22,71 +29,180 @@ const SHIFT_ICONS = {
   OFF: HomeOffIcon,
 };
 
-const WEEK_DAYS = [
-  { label: '월', date: 16, shift: 'N' },
-  { label: '화', date: 17, shift: 'OFF' },
-  { label: '수', date: 18, shift: 'D' },
-  { label: '목', date: 19, shift: 'N' },
-  { label: '금', date: 20, shift: 'N', isToday: true },
-  { label: '토', date: 21, shift: 'E' },
-  { label: '일', date: 22, shift: 'E' },
+const SHIFT_GREETING_LABELS = {
+  D: '데이 근무',
+  E: '이브닝 근무',
+  N: '나이트 근무',
+  OFF: '휴무',
+};
+
+const SHIFT_TOP_ICONS = {
+  D: DayTopIcon,
+  E: EveningTopIcon,
+  N: NightTopIcon,
+  OFF: OffTopIcon,
+};
+
+const DAY_OF_WEEK_LABELS = {
+  MONDAY: '월',
+  TUESDAY: '화',
+  WEDNESDAY: '수',
+  THURSDAY: '목',
+  FRIDAY: '금',
+  SATURDAY: '토',
+  SUNDAY: '일',
+};
+
+const BLOCK_CATEGORY_TO_KEY = {
+  SOCIAL: 'social',
+  REFRESH: 'refresh',
+  MY: 'mytime',
+};
+
+function formatDate(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+function getWeekRange(date) {
+  const day = date.getDay();
+  const diffToMonday = day === 0 ? -6 : 1 - day;
+  const monday = new Date(date);
+  monday.setDate(date.getDate() + diffToMonday);
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  return [monday, sunday];
+}
+
+function formatMinutes(totalMinutes) {
+  const minutes = totalMinutes || 0;
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return m === 0 ? `${h}시간` : `${h}시간 ${m}분`;
+}
+
+function formatTime(isoDateTime) {
+  return isoDateTime ? isoDateTime.slice(11, 16) : '';
+}
+
+function formatClock(date) {
+  const h = String(date.getHours()).padStart(2, '0');
+  const m = String(date.getMinutes()).padStart(2, '0');
+  const s = String(date.getSeconds()).padStart(2, '0');
+  return `${h}:${m}:${s}`;
+}
+
+const TIME_ENTRY_META = [
+  { key: 'social', label: 'Social Time', Icon: SocialIcon, iconClass: 'social-time-icon' },
+  { key: 'refresh', label: 'Refresh Time', Icon: RefreshIcon, iconClass: 'refresh-time-icon' },
+  { key: 'mytime', label: 'My Time', Icon: MytimeIcon, iconClass: 'my-time-icon' },
 ];
 
-const AI_TAGS = ['🌙 이틀 연속 나이트 근무', '😐 피로도 4점 기록', '🌿 피부 당김', '🚫 회복 모드 연속 미수행'];
+function renderRingCenterValue(label) {
+  if (label === '배정된 일정이 없어요') {
+    return (
+      <>
+        배정된 일정이
+        <br />
+        없어요
+      </>
+    );
+  }
+  const parts = label.split(' ');
+  if (parts.length === 2 && label !== 'My Time') {
+    return (
+      <>
+        {parts[0]}
+        <br />
+        {parts[1]}
+      </>
+    );
+  }
+  return label;
+}
 
-const TIME_ENTRIES = [
-  {
-    key: 'social',
-    label: 'Social Time',
-    Icon: SocialIcon,
-    iconClass: 'social-time-icon',
-    entries: [{ time: '21:00 ~ 07:00', tag: '나이트 근무' }],
-  },
-  {
-    key: 'refresh',
-    label: 'Refresh Time',
-    Icon: RefreshIcon,
-    iconClass: 'refresh-time-icon',
-    entries: [
-      { time: '21:00 ~ 07:00', tag: '피부 관리 | 식사' },
-      { time: '21:00 ~ 07:00', tag: '스트레칭 | 식사' },
-      { time: '21:00 ~ 07:00', tag: '피부 관리' },
-    ],
-  },
-  {
-    key: 'mytime',
-    label: 'My Time',
-    Icon: MytimeIcon,
-    iconClass: 'my-time-icon',
-    entries: [
-      { time: '21:00 ~ 07:00', tag: '내가 추가한 일정' },
-      { time: '21:00 ~ 07:00', tag: '영상 시청 | 게임' },
-    ],
-  },
-];
+function findCurrentCategoryLabel(blocks, now) {
+  const current = (blocks || []).find((b) => {
+    const start = new Date(b.startAt);
+    const end = new Date(b.endAt);
+    return now >= start && now <= end;
+  });
+  if (!current) return '배정된 일정이 없어요';
+  const meta = TIME_ENTRY_META.find((m) => m.key === BLOCK_CATEGORY_TO_KEY[current.category]);
+  return meta ? meta.label : '배정된 일정이 없어요';
+}
 
-function RingArcs() {
+function groupBlocksByCategory(blocks) {
+  const grouped = { social: [], refresh: [], mytime: [] };
+  (blocks || []).forEach((block) => {
+    const key = BLOCK_CATEGORY_TO_KEY[block.category];
+    if (!key) return;
+    grouped[key].push({ time: `${formatTime(block.startAt)} ~ ${formatTime(block.endAt)}`, tag: block.label || '' });
+  });
+  return grouped;
+}
+
+// Today ring (page 1): dynamic 3-segment ring driven by real social/refresh/my
+// minute proportions. Same visual language (gap size, tick overlay, bead caps)
+// as the My Time ring below, just one arc per category instead of split arcs.
+const TODAY_RING_ORDER = ['refresh', 'social', 'mytime'];
+const TODAY_RING_STYLE = {
+  refresh: { base: '#F7C1C1', tick: '#F18E8E' },
+  social: { base: '#AEADC1', tick: '#6B698E' },
+  mytime: { base: '#FAF0DD', tick: '#F5E3C1' },
+};
+
+function buildTodayRingSegments(percents) {
+  const usableDeg = 360 - MYTIME_RING_GAP_DEG * TODAY_RING_ORDER.length;
+  let angle = 0;
+  return TODAY_RING_ORDER.map((key) => {
+    const subDeg = ((percents[key] || 0) / 100) * usableDeg;
+    const start = angle;
+    const end = angle + subDeg;
+    angle = end + MYTIME_RING_GAP_DEG;
+    return { key, start, end, ...TODAY_RING_STYLE[key] };
+  });
+}
+
+function RingArcs({ percents }) {
+  const segments = buildTodayRingSegments(percents);
+  const gaps = segments.map((seg, i) => {
+    const next = segments[(i + 1) % segments.length];
+    const to = i === segments.length - 1 ? 360 : next.start;
+    return { key: `gap-${i}`, from: seg.end, to };
+  });
+
   return (
-    <g transform="rotate(-72 125 125)">
-      {/* base ring (light tint) */}
-      <path d="M125,15.5 A109.5,109.5 0 0,1 189.36,213.59" fill="none" stroke="#F7C1C1" strokeWidth="30" strokeLinecap="round" />
-      <path d="M189.36,213.59 A109.5,109.5 0 0,1 15.70,131.88" fill="none" stroke="#AEADC1" strokeWidth="30" strokeLinecap="round" />
-      <path d="M15.70,131.88 A109.5,109.5 0 0,1 125,15.5" fill="none" stroke="#FAF0DD" strokeWidth="30" strokeLinecap="round" />
-      {/* tick overlay, same hue at 50% opacity */}
-      <path d="M125,15.5 A109.5,109.5 0 0,1 189.36,213.59" fill="none" stroke="#F18E8E" strokeOpacity="0.5" strokeWidth="9" strokeDasharray="2.5 4" />
-      <path d="M189.36,213.59 A109.5,109.5 0 0,1 15.70,131.88" fill="none" stroke="#6B698E" strokeOpacity="0.5" strokeWidth="9" strokeDasharray="2.5 4" />
-      <path d="M15.70,131.88 A109.5,109.5 0 0,1 125,15.5" fill="none" stroke="#F5E3C1" strokeOpacity="0.5" strokeWidth="9" strokeDasharray="2.5 4" />
-      {/* boundary gap connectors */}
-      <path d="M107.87,16.85 A109.5,109.5 0 0,1 142.13,16.85" fill="none" stroke="#E8E8E8" strokeWidth="30" />
-      <path d="M202.43,202.43 A109.5,109.5 0 0,1 174.71,222.57" fill="none" stroke="#E8E8E8" strokeWidth="30" />
-      <path d="M18.11,148.89 A109.5,109.5 0 0,1 15.99,114.69" fill="none" stroke="#E8E8E8" strokeWidth="30" />
-      {/* boundary beads */}
-      <circle cx="107.87" cy="16.85" r="15" fill="#F5E3C1" />
-      <circle cx="142.13" cy="16.85" r="15" fill="#F18E8E" />
-      <circle cx="202.43" cy="202.43" r="15" fill="#F18E8E" />
-      <circle cx="174.71" cy="222.57" r="15" fill="#6B698E" />
-      <circle cx="18.11" cy="148.89" r="15" fill="#6B698E" />
-      <circle cx="15.99" cy="114.69" r="15" fill="#F5E3C1" />
+    <g>
+      {segments.map((seg) => (
+        <path key={seg.key} d={myTimeRingArcPath(seg.start, seg.end)} fill="none" stroke={seg.base} strokeWidth="30" strokeLinecap="round" />
+      ))}
+      {segments.map((seg) => (
+        <path
+          key={`${seg.key}-tick`}
+          d={myTimeRingArcPath(seg.start, seg.end)}
+          fill="none"
+          stroke={seg.tick}
+          strokeOpacity="0.5"
+          strokeWidth="9"
+          strokeDasharray="2.5 4"
+        />
+      ))}
+      {gaps.map((gap) => (
+        <path key={gap.key} d={myTimeRingArcPath(gap.from, gap.to)} fill="none" stroke="#E8E8E8" strokeWidth="30" />
+      ))}
+      {segments.map((seg) => {
+        const startPt = myTimeRingPoint(seg.start);
+        const endPt = myTimeRingPoint(seg.end);
+        return (
+          <g key={`${seg.key}-beads`}>
+            <circle cx={startPt.x} cy={startPt.y} r="15" fill={seg.tick} />
+            <circle cx={endPt.x} cy={endPt.y} r="15" fill={seg.tick} />
+          </g>
+        );
+      })}
     </g>
   );
 }
@@ -191,10 +307,39 @@ function MyTimeRingArcs() {
 }
 
 function Home() {
+  const navigate = useNavigate();
   const [aiOpen, setAiOpen] = useState(false);
   const [hasAlarm, setHasAlarm] = useState(true);
   const [page, setPage] = useState(0);
+  const [now, setNow] = useState(new Date());
   const touchStartX = useRef(null);
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const [weekStart, weekEnd] = getWeekRange(new Date());
+  const weekStartStr = formatDate(weekStart);
+  const weekEndStr = formatDate(weekEnd);
+  const todayStr = formatDate(new Date());
+
+  const {
+    data: homeData,
+    error: homeError,
+  } = useQuery({ queryKey: ['home', 'today'], queryFn: createOrGetTodayHome, retry: false });
+
+  const { data: scheduleData } = useQuery({
+    queryKey: ['schedules', weekStartStr, weekEndStr],
+    queryFn: () => getSchedules(weekStartStr, weekEndStr),
+    retry: false,
+  });
+
+  useEffect(() => {
+    if (homeError instanceof ApiError && homeError.code === 'ONBOARDING_NOT_COMPLETED') {
+      navigate('/onboarding/step1');
+    }
+  }, [homeError, navigate]);
 
   const handleTouchStart = (e) => {
     touchStartX.current = e.touches[0].clientX;
@@ -208,6 +353,36 @@ function Home() {
     touchStartX.current = null;
   };
 
+  const socialMinutes = homeData?.socialMinutes || 0;
+  const refreshMinutes = homeData?.refreshMinutes || 0;
+  const myMinutes = homeData?.myMinutes || 0;
+  const totalMinutes = socialMinutes + refreshMinutes + myMinutes;
+  const percents = {
+    social: totalMinutes ? (socialMinutes / totalMinutes) * 100 : 0,
+    refresh: totalMinutes ? (refreshMinutes / totalMinutes) * 100 : 0,
+    mytime: totalMinutes ? (myMinutes / totalMinutes) * 100 : 0,
+  };
+
+  const weekDays = (scheduleData?.schedules || []).map((s) => ({
+    date: s.date,
+    label: DAY_OF_WEEK_LABELS[s.dayOfWeek] || '',
+    dateNum: Number(s.date.slice(8, 10)),
+    shift: s.shiftType,
+    isToday: s.date === todayStr,
+  }));
+
+  const groupedEntries = groupBlocksByCategory(homeData?.blocks);
+  const currentCategoryLabel = findCurrentCategoryLabel(homeData?.blocks, now);
+
+  if (homeError && !(homeError instanceof ApiError && homeError.code === 'ONBOARDING_NOT_COMPLETED')) {
+    return (
+      <div className="page home-page">
+        <p>홈 정보를 불러오지 못했어요.</p>
+        <BottomNav />
+      </div>
+    );
+  }
+
   return (
     <div className="page home-page">
       <button
@@ -219,10 +394,13 @@ function Home() {
         {hasAlarm ? <AlarmPushIcon /> : <AlarmIcon />}
       </button>
 
-      <p className="home-greeting">수정님, 좋은 아침이에요 🌞</p>
+      <p className="home-greeting">{homeData?.nickname ? `${homeData.nickname}님, 좋은 아침이에요 🌞` : '좋은 아침이에요 🌞'}</p>
       <div className="home-today">
-        <h1>오늘은 나이트 근무예요</h1>
-        <NightTopIcon className="home-today-icon" />
+        <h1>{homeData?.shiftType ? `오늘은 ${SHIFT_GREETING_LABELS[homeData.shiftType]}예요` : '오늘의 근무표가 없어요'}</h1>
+        {(() => {
+          const TopIcon = SHIFT_TOP_ICONS[homeData?.shiftType];
+          return TopIcon ? <TopIcon className="home-today-icon" /> : null;
+        })()}
       </div>
 
       <div className="home-calendar-card">
@@ -236,13 +414,13 @@ function Home() {
           </button>
         </div>
         <div className="home-calendar-days">
-          {WEEK_DAYS.map((d) => {
+          {weekDays.map((d) => {
             const ShiftIcon = SHIFT_ICONS[d.shift];
             return (
             <div key={d.date} className={d.isToday ? 'calendar-day is-today' : 'calendar-day'}>
               <span className="calendar-day-label">{d.label}</span>
-              <span className="calendar-day-date">{d.date}</span>
-              <ShiftIcon className="calendar-day-shift-icon" />
+              <span className="calendar-day-date">{d.dateNum}</span>
+              {ShiftIcon && <ShiftIcon className="calendar-day-shift-icon" />}
             </div>
             );
           })}
@@ -271,30 +449,30 @@ function Home() {
           <>
             <div className="home-ring-wrap">
               <svg className="home-ring-svg" viewBox="0 0 250 250" width="100%" height="100%">
-                <RingArcs />
+                <RingArcs percents={percents} />
                 <circle cx="125" cy="125" r="84.5" fill="#FFEDED" stroke="#FFE0D6" strokeWidth="1" />
               </svg>
-              <div className="home-ring-center">23:48:01</div>
+              <div className="home-ring-center">{formatClock(now)}</div>
             </div>
 
             <div className="home-stats">
               <div className="home-stat">
                 <SocialIcon className="social-time-icon" />
                 <p className="home-stat-label-social">Social Time</p>
-                <p className="home-stat-value">7시간 30분</p>
-                <span className="home-stat-pill home-stat-pill-social">34%</span>
+                <p className="home-stat-value">{formatMinutes(socialMinutes)}</p>
+                <span className="home-stat-pill home-stat-pill-social">{Math.round(percents.social)}%</span>
               </div>
               <div className="home-stat">
                 <RefreshIcon className="refresh-time-icon" />
                 <p className="home-stat-label-refresh">Refresh Time</p>
-                <p className="home-stat-value">4시간 30분</p>
-                <span className="home-stat-pill home-stat-pill-refresh">40%</span>
+                <p className="home-stat-value">{formatMinutes(refreshMinutes)}</p>
+                <span className="home-stat-pill home-stat-pill-refresh">{Math.round(percents.refresh)}%</span>
               </div>
               <div className="home-stat">
                 <MytimeIcon className="my-time-icon" />
                 <p className="home-stat-label-mytime">My Time</p>
-                <p className="home-stat-value">12시간</p>
-                <span className="home-stat-pill home-stat-pill-mytime">26%</span>
+                <p className="home-stat-value">{formatMinutes(myMinutes)}</p>
+                <span className="home-stat-pill home-stat-pill-mytime">{Math.round(percents.mytime)}%</span>
               </div>
             </div>
 
@@ -316,18 +494,11 @@ function Home() {
                 <p className="home-ai-title">
                   <AiCommentIcon className="home-ai-title-icon" /> AI 코멘트
                 </p>
-                <p className="home-ai-body">
-                  나이트 근무를 이틀 연속 하셔서 회복이 더 필요할 것 같아요.
-                  <br />
-                  또한 어제 체크인에서 피로도(4/5)와 피부 당김을 선택해 회복이 더 필요하다고 판단했어요.
-                  <br />
-                  그래서 오늘은 <strong>Refresh Time을 평소보다 1시간 30분 더 확보</strong>하고, My Time은 조금 줄여{' '}
-                  <strong>피부와 수면 회복을 우선</strong>하도록 시간을 재설계했어요. 😊
-                </p>
+                <p className="home-ai-body">{homeData?.aiComment}</p>
                 <div className="home-ai-tags">
-                  {AI_TAGS.map((tag) => (
-                    <span key={tag} className="home-ai-tag">
-                      {tag}
+                  {(homeData?.badges || []).map((badge, i) => (
+                    <span key={i} className="home-ai-tag">
+                      {badge.text}
                     </span>
                   ))}
                 </div>
@@ -374,17 +545,17 @@ function Home() {
               </svg>
               <div className="home-ring-center">
                 <p className="home-ring-center-label">현재 시간은</p>
-                <p className="home-ring-center-value">My Time</p>
+                <p className="home-ring-center-value">{renderRingCenterValue(currentCategoryLabel)}</p>
               </div>
             </div>
 
             <div className="home-stats">
-              {TIME_ENTRIES.map((stat) => (
+              {TIME_ENTRY_META.map((stat) => (
                 <div key={stat.key} className="home-stat">
                   <stat.Icon className={stat.iconClass} />
                   <p className={`home-stat-label-${stat.key}`}>{stat.label}</p>
                   <div className="home-stat-entries">
-                    {stat.entries.map((entry, i) => (
+                    {groupedEntries[stat.key].map((entry, i) => (
                       <div key={i} className="home-stat-entry">
                         <span className="home-stat-time">{entry.time}</span>
                         <span className={`home-stat-tag home-stat-tag-${stat.key}`}>{entry.tag}</span>

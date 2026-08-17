@@ -1,17 +1,37 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ReactComponent as HomeSpinnerIcon } from '../../assets/images/home-spinner.svg';
+import { ocrSchedules } from '../../api/schedule';
+import { ApiError } from '../../api/client';
 import './ScanLoading.css';
 
 function ScanLoading() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      navigate('/work-schedule/scan-result');
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, [navigate]);
+    const file = location.state?.file;
+    if (!file) {
+      navigate('/work-schedule/manual-entry', { replace: true });
+      return;
+    }
+
+    let cancelled = false;
+    ocrSchedules(file)
+      .then((data) => {
+        if (cancelled) return;
+        navigate('/work-schedule/scan-result', { replace: true, state: { schedules: data.schedules } });
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        const message = err instanceof ApiError ? err.message : '근무표 인식에 실패했어요. 다시 시도해 주세요.';
+        navigate('/work-schedule/manual-entry', { replace: true, state: { ocrError: message } });
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [location.state, navigate]);
 
   return (
     <div className="page scan-loading-page">
