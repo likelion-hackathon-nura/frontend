@@ -6,7 +6,44 @@ import CheckWhite02 from '../../../assets/images/check_white_2.svg'
 import CheckTip from '../../../assets/images/recovery_check_icon.svg'
 import TitleLine from '../../../assets/images/recovery_title_icon.svg'
 
-const Recovery02 = ({ matchedProduct, onComplete }) => {
+const Recovery02 = ({ matchedProduct, onComplete, stepData, previousStepData, }) => {
+
+    const ingredients = (() => {
+        const value = stepData?.recommended_ingredients
+
+        if (!value) {
+            return ['세라마이드', '히알루론산', '스쿠알란']
+        }
+
+        try {
+            const parsedIngredients = JSON.parse(value)
+
+            if (Array.isArray(parsedIngredients)) {
+                return parsedIngredients
+            }
+        } catch {
+            return value
+                .replace(/[[\]"]/g, '')
+                .split(/[,;|]/)
+                .map(ingredient => ingredient.trim())
+                .filter(Boolean)
+        }
+
+        return ['세라마이드', '히알루론산', '스쿠알란']
+    })()
+
+    const precautions = stepData?.precautions
+        ? stepData.precautions
+            .split(/\n+|•/)
+            .map(precaution => precaution.trim())
+            .filter(Boolean)
+        : [
+            '피부가 아직 촉촉할 때 바르면 보습 효과를 오래 유지할 수 있어요.',
+            '양 볼과 입가처럼 당김이 심한 부위는 한 번 더 얇게 덧발라주세요.',
+            '손바닥으로 가볍게 눌러주면 흡수에 도움이 됩니다.',
+        ]
+
+
     return (
         <div className="recovery02_wrap">
 
@@ -15,31 +52,31 @@ const Recovery02 = ({ matchedProduct, onComplete }) => {
                     <span>
                         <img src={CheckWhite02} alt="진정 단계 완료" />
                     </span>
-                    <p>진정</p>
+                    <p>{previousStepData?.title || '진정'}</p>
                 </div>
 
                 <div className="recovery02_progress_line" />
 
                 <div className="recovery02_progress_step active">
                     <span>2</span>
-                    <p>보습</p>
+                    <p>{stepData?.title || '보습'}</p>
                 </div>
             </div>
 
             <div className="recovery02_top">
                 <div className="recovery02_title">
                     <span>STEP 2</span>
-                    <p>수분을 채워 피부를 보호해주세요.</p>
+                    <p>{stepData?.title || '수분을 채워 피부를 보호해주세요.'}</p>
                 </div>
 
                 <p className="recovery02_content01">
-                    진정 단계를 마쳤다면 이제 피부에 공급한<br />
-                    수분이 쉽게 빠져나가지 않도록 보호하는 단계예요.
+                    {stepData?.reason ||
+                        '첫 번째 단계 이후 피부 보호를 위한 추가 관리가 필요해요.'}
                 </p>
 
                 <p className="recovery02_content02">
-                    피부 표면을 촉촉하게 유지하고 편안한 상태를<br />
-                    오래 유지할 수 있도록 보습 중심의 케어를 추천드려요.
+                    {stepData?.description ||
+                        '피부를 편안한 상태로 유지할 수 있도록 보습 중심의 케어를 진행해주세요.'}
                 </p>
             </div>
 
@@ -56,9 +93,11 @@ const Recovery02 = ({ matchedProduct, onComplete }) => {
                     </p>
 
                     <div className="recovery02_tags">
-                        <span>세라마이드</span>
-                        <span>히알루론산</span>
-                        <span>스쿠알란</span>
+                        {ingredients.map((ingredient, index) => (
+                            <span key={`${ingredient}-${index}`}>
+                                {ingredient}
+                            </span>
+                        ))}
                     </div>
                 </section>
 
@@ -107,28 +146,12 @@ const Recovery02 = ({ matchedProduct, onComplete }) => {
                     </div>
 
                     <div className="recovery02_caution">
-                        <div>
-                            <img src={CheckTip} alt="" />
-                            <p>
-                                피부가 아직 촉촉할 때 바르면 보습 효과를 오래<br />
-                                유지할 수 있어요.
-                            </p>
-                        </div>
-
-                        <div>
-                            <img src={CheckTip} alt="" />
-                            <p>
-                                양 볼과 입가처럼 당김이 심한 부위는 한 번 더 얇게<br />
-                                덧발라주세요.
-                            </p>
-                        </div>
-
-                        <div>
-                            <img src={CheckTip} alt="" />
-                            <p>
-                                손바닥으로 가볍게 눌러주면 흡수에 도움이 됩니다.
-                            </p>
-                        </div>
+                        {precautions.map((precaution, index) => (
+                            <div key={`${precaution}-${index}`}>
+                                <img src={CheckTip} alt="" />
+                                <p>{precaution}</p>
+                            </div>
+                        ))}
                     </div>
                 </section>
             </div>

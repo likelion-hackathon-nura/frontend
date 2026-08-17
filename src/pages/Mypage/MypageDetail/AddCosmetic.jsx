@@ -2,6 +2,10 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import './AddCosmetic.css'
+import {
+    analyzeCosmeticOcr,
+    registerCosmetic,
+} from '../../../api/skin'
 
 import PrevBtn from '../../../assets/images/prev_btn.svg'
 import CameraIcon from '../../../assets/images/add_camera_icon.svg'
@@ -19,18 +23,36 @@ const productTypes = [
     '기타',
 ]
 
+const PRODUCT_TYPE_MAP = {
+    세럼: 'SERUM',
+    크림: 'CREAM',
+    토너: 'TONER',
+    로션: 'LOTION',
+    클렌저: 'CLEANSER',
+    선크림: 'OTHER',
+    오일: 'OTHER',
+    기타: 'OTHER',
+}
+
 const AddCosmetic = () => {
     const navigate = useNavigate()
 
     const [selectedType, setSelectedType] = useState('')
     const [photoPreview, setPhotoPreview] = useState('')
+    const [brandName, setBrandName] = useState('')
+    const [productName, setProductName] = useState('')
+    const [photo, setPhoto] = useState(null)
+    const [cosmeticIngredients, setCosmeticIngredients] = useState('')
+    const [coreIngredients, setCoreIngredients] = useState('')
+    const [isAnalyzing, setIsAnalyzing] = useState(false)
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
-    const handlePhotoChange = (e) => {
+    const handlePhotoChange = async (e) => {
         const file = e.target.files[0]
 
-        if (!file) {
-            return
-        }
+        if (!file) return
+
+        setPhoto(file)
 
         const reader = new FileReader()
 
@@ -39,13 +61,63 @@ const AddCosmetic = () => {
         }
 
         reader.readAsDataURL(file)
+
+        try {
+            setIsAnalyzing(true)
+
+            const response = await analyzeCosmeticOcr(file)
+            const ocrData = response?.data ?? response
+
+            setCosmeticIngredients(ocrData.cosmeticIngredients || '')
+            setCoreIngredients(ocrData.coreIngredients || '')
+
+            alert('화장품 성분 분석이 완료되었습니다.')
+        } catch (error) {
+            console.error('화장품 OCR 분석 실패:', error)
+            alert(error.message || '화장품 성분 분석에 실패했습니다.')
+        } finally {
+            setIsAnalyzing(false)
+        }
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
 
-        // TODO: 화장품 추가 API 연동
-        navigate('/mypage/cosmetic-management')
+        if (!brandName.trim() || !productName.trim() || !selectedType) {
+            alert('브랜드명, 제품 종류, 제품명을 모두 입력해주세요.')
+            return
+        }
+
+        if (!photo) {
+            alert('화장품 뒷면 사진을 업로드해주세요.')
+            return
+        }
+
+        if (isAnalyzing) {
+            alert('성분 분석이 끝날 때까지 잠시 기다려주세요.')
+            return
+        }
+
+        try {
+            setIsSubmitting(true)
+
+            await registerCosmetic({
+                cosmeticBrand: brandName.trim(),
+                cosmeticName: productName.trim(),
+                cosmeticType: PRODUCT_TYPE_MAP[selectedType],
+                cosmeticIngredients,
+                coreIngredients,
+                cosmeticUrl: '',
+            })
+
+            alert('화장품이 등록되었습니다.')
+            navigate('/mypage/cosmetic-management')
+        } catch (error) {
+            console.error('화장품 등록 실패:', error)
+            alert(error.message || '화장품 등록에 실패했습니다.')
+        } finally {
+            setIsSubmitting(false)
+        }
     }
 
     return (
@@ -64,6 +136,8 @@ const AddCosmetic = () => {
                         id="brand-name"
                         type="text"
                         placeholder="브랜드명을 입력해주세요."
+                        value={brandName}
+                        onChange={e => setBrandName(e.target.value)}
                     />
                 </div>
 
@@ -95,6 +169,8 @@ const AddCosmetic = () => {
                         id="product-name"
                         type="text"
                         placeholder="제품명을 입력해주세요."
+                        value={productName}
+                        onChange={e => setProductName(e.target.value)}
                     />
                 </div>
 
@@ -143,8 +219,13 @@ const AddCosmetic = () => {
                 <button
                     type="submit"
                     className="addcosmetic_submit"
+                    disabled={isAnalyzing || isSubmitting}
                 >
-                    완료
+                    {isAnalyzing
+                        ? '성분 분석 중...'
+                        : isSubmitting
+                            ? '등록 중...'
+                            : '완료'}
                 </button>
             </form>
         </div>
