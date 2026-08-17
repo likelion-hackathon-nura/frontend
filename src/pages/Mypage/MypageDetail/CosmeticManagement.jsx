@@ -1,7 +1,11 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import './CosmeticManagement.css'
+import {
+    deleteRegisteredCosmetic,
+    getRegisteredCosmetics,
+} from '../../../api/skin'
 
 import PrevBtn from '../../../assets/images/prev_btn.svg'
 import Product01 from '../../../assets/images/recovery_product_1.svg'
@@ -12,57 +16,124 @@ import ProductSearchIcon from '../../../assets/images/cosmetic_search_icon.svg'
 import CosmeticCheckIcon from '../../../assets/images/recovery_check_icon.svg'
 import CosmeticPlusIcon from '../../../assets/images/cosmetic_plus_icon.svg'
 
-const initialProducts = [
-    {
-        id: 1,
-        name: '마일드 시카 세럼',
-        date: '2026.06.12',
-        image: Product01,
-        descriptions: [
-            '민감성 피부에 적합한 저자극 진정 세럼',
-            '병풀추출물, 판테놀 함유',
-        ],
-    },
-    {
-        id: 2,
-        name: '세라마이드 수분 크림',
-        date: '2026.06.12',
-        image: Product02,
-        descriptions: [
-            '피부에 수분 보호막을 형성하는 보습 크림',
-            '히알루론산, 세라마이드 함유',
-        ],
-    },
-    {
-        id: 3,
-        name: '비타 브라이트 앰플',
-        date: '2026.06.12',
-        image: Product03,
-        descriptions: [
-            '칙칙한 피부를 환하게 가꾸는 비타민 앰플',
-            '비타민C, 알부틴 함유',
-        ],
-    },
-    {
-        id: 4,
-        name: '그린티 밸런싱 토너',
-        date: '2026.06.12',
-        image: Product04,
-        descriptions: [
-            '피부 유·수분 밸런스를 맞춰주는 진정 토너',
-            '녹차추출물 함유',
-        ],
-    },
+const FALLBACK_IMAGES = [
+    Product01,
+    Product02,
+    Product03,
+    Product04,
 ]
+
+const PRODUCT_TYPE_LABELS = {
+    CLEANSER: '클렌저',
+    TONER: '토너',
+    SERUM: '세럼',
+    LOTION: '로션',
+    CREAM: '크림',
+    MASK: '마스크팩',
+    OTHER: '기타',
+}
+
+const formatDate = date => {
+    if (!date) return ''
+
+    return date.slice(0, 10).replaceAll('-', '.')
+}
+
+const formatIngredients = ingredients => {
+    if (!ingredients) return ''
+
+    try {
+        const parsedIngredients = JSON.parse(ingredients)
+
+        return Array.isArray(parsedIngredients)
+            ? parsedIngredients.join(', ')
+            : ingredients
+    } catch {
+        return ingredients
+    }
+}
+
+const getCosmeticList = data => {
+    if (Array.isArray(data)) return data
+
+    return (
+        data?.registeredCosmetics ||
+        data?.cosmetics ||
+        data?.items ||
+        data?.content ||
+        []
+    )
+}
+
+const normalizeProduct = (product, index) => {
+    const cosmeticType =
+        product.cosmeticType || product.cosmetic_type
+
+    const ingredients = formatIngredients(
+        product.coreIngredients ||
+        product.core_ingredients ||
+        product.cosmeticIngredients ||
+        product.cosmetic_ingredients
+    )
+
+    return {
+        id:
+            product.registeredCosmeticId ||
+            product.registered_cosmetic_id ||
+            product.id,
+        name:
+            product.cosmeticName ||
+            product.cosmetic_name ||
+            '이름 없는 제품',
+        date: formatDate(
+            product.registeredAt ||
+            product.registered_at
+        ),
+        image:
+            product.cosmeticUrl ||
+            product.cosmetic_url ||
+            FALLBACK_IMAGES[index % FALLBACK_IMAGES.length],
+        descriptions: [
+            product.cosmeticBrand ||
+            product.cosmetic_brand,
+            ingredients ||
+            PRODUCT_TYPE_LABELS[cosmeticType] ||
+            cosmeticType,
+        ].filter(Boolean),
+    }
+}
 
 const CosmeticManagement = () => {
 
     const navigate = useNavigate()
     const pointerStartX = useRef(0)
 
-    const [products, setProducts] = useState(initialProducts)
+    const [products, setProducts] = useState([])
+    const [isLoading, setIsLoading] = useState(true)
     const [searchValue, setSearchValue] = useState('')
     const [openedProductId, setOpenedProductId] = useState(null)
+
+    useEffect(() => {
+        const loadCosmetics = async () => {
+            try {
+                const data = await getRegisteredCosmetics()
+                const cosmeticList = getCosmeticList(data)
+
+                setProducts(
+                    cosmeticList.map((product, index) =>
+                        normalizeProduct(product, index)
+                    )
+                )
+            } catch (error) {
+                console.error('등록 화장품 목록 조회 실패:', error)
+                alert(error.message || '등록 화장품을 불러오지 못했습니다.')
+            } finally {
+                setIsLoading(false)
+            }
+        }
+
+        loadCosmetics()
+    }, [])
 
     const filteredProducts = products.filter((product) =>
         product.name.includes(searchValue.trim())
@@ -85,11 +156,21 @@ const CosmeticManagement = () => {
         }
     }
 
-    const handleDelete = (productId) => {
-        setProducts((prev) =>
-            prev.filter((product) => product.id !== productId)
-        )
-        setOpenedProductId(null)
+    const handleDelete = async productId => {
+        if (!window.confirm('등록한 화장품을 삭제할까요?')) return
+
+        try {
+            await deleteRegisteredCosmetic(productId)
+
+            setProducts(prev =>
+                prev.filter(product => product.id !== productId)
+            )
+
+            setOpenedProductId(null)
+        } catch (error) {
+            console.error('등록 화장품 삭제 실패:', error)
+            alert(error.message || '화장품 삭제에 실패했습니다.')
+        }
     }
 
     return (
@@ -181,7 +262,7 @@ const CosmeticManagement = () => {
                     ))}
                 </div>
 
-                {filteredProducts.length === 0 && (
+                {!isLoading && filteredProducts.length === 0 && (
                     <p className="cosmeticmanage_empty">
                         검색 결과가 없습니다.
                     </p>
