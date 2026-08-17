@@ -25,3 +25,9 @@ export function submitScheduleFeedback({
         },
     });
 }
+
+export function logoutUser() {
+    return apiRequest('/api/auth/logout', {
+        method: 'POST',
+    });
+}
