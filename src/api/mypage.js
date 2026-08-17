@@ -10,3 +10,18 @@ export function updateMyPreferences(preferences) {
         body: preferences,
     });
 }
+
+export function submitScheduleFeedback({
+    myWeight,
+    refreshWeight,
+    feedbackContents,
+}) {
+    return apiRequest('/api/schedule-feedback', {
+        method: 'POST',
+        body: {
+            myWeight,
+            refreshWeight,
+            feedbackContents,
+        },
+    });
+}
