@@ -275,6 +275,14 @@
   color: #480000;
 }
 
+.scan-result-error {
+  margin-top: 12px;
+
+  font-size: 13px;
+  font-weight: var(--font-medium);
+  color: #D27373;
+}
+
 .scan-result-submit {
   margin-top: 30px;
   height: 51px;

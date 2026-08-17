@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import './BottomNav.css'
 import Home_icon from '../../assets/images/home_icon.svg'
@@ -18,6 +18,14 @@ const BottomNav = () => {
   const [menuOpen, setMenuOpen] = useState(false)
   const [workOpen, setWorkOpen] = useState(false)
   const [scheduleOpen, setScheduleOpen] = useState(false)
+  const fileInputRef = useRef(null)
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0]
+    e.target.value = ''
+    if (!file) return
+    navigate('/work-schedule/scan-loading', { state: { file } })
+  }
 
   // 경로는 각자 수정할 것
   const HOME_PATH = '/home'
@@ -27,6 +35,13 @@ const BottomNav = () => {
 
   return (
     <div>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        style={{ display: 'none' }}
+        onChange={handleFileChange}
+      />
       {menuOpen && (
         <div
           className="bottom_nav_overlay"
@@ -54,7 +69,7 @@ const BottomNav = () => {
                 className="bottom_nav_menu_sub"
                 onClick={(e) => {
                   e.stopPropagation()
-                  navigate('/work-schedule/scan-loading')
+                  fileInputRef.current?.click()
                 }}
               >
                 사진 업로드하기

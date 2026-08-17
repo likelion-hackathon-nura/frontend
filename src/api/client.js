@@ -34,7 +34,9 @@ async function refreshTokens() {
 // Access Token 만료(401)면 /api/auth/refresh로 한 번만 재발급받아 원 요청을 재시도한다.
 // refresh마저 실패하면 저장된 토큰을 지우고 로그인 화면으로 보낸다.
 export async function apiRequest(path, { method = 'GET', body, auth = true, isRetry = false } = {}) {
-  const headers = { 'Content-Type': 'application/json' };
+  const isFormData = body instanceof FormData;
+  const headers = {};
+  if (!isFormData) headers['Content-Type'] = 'application/json';
   if (auth) {
     const token = getAccessToken();
     if (token) headers.Authorization = `Bearer ${token}`;
@@ -43,7 +45,7 @@ export async function apiRequest(path, { method = 'GET', body, auth = true, isRe
   const res = await fetch(`${API_BASE_URL}${path}`, {
     method,
     headers,
-    body: body ? JSON.stringify(body) : undefined,
+    body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,
   });
   const responseBody = await res.json();
 
