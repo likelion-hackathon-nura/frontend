@@ -64,13 +64,37 @@ const Report = () => {
         loadWeeklyReport()
     }, [])
 
-    const aiComment = reportData?.ai_comment
-    const recoveryTrend = reportData?.recovery_trend
-    const timeBalance = reportData?.time_balance
-    const graphData = recoveryTrend?.graph_data || []
-    const avgRefreshTime = parseRefreshTime(
-        recoveryTrend?.avg_refresh_time
+    const aiComment = reportData?.aiComment
+    const recoveryTrend = reportData?.recoveryTrend
+    const timeBalance = reportData?.threeTimeBalance
+
+    const commentBullets = [
+        aiComment?.bullet1,
+        aiComment?.bullet2,
+        aiComment?.bullet3,
+    ].filter(Boolean)
+
+    const lastWeekByDay = new Map(
+        (recoveryTrend?.lastWeek || []).map((item) => [
+            item.dayOfWeek,
+            item.hours,
+        ])
     )
+
+    const graphData = (recoveryTrend?.thisWeek || []).map((item) => ({
+        day: item.dayOfWeek,
+        current: item.hours ?? 0,
+        previous: lastWeekByDay.get(item.dayOfWeek) ?? 0,
+    }))
+
+    const avgRefreshTime = parseRefreshTime(
+        recoveryTrend?.averageRefreshTimeText
+    )
+
+    const comparisonMinutes = recoveryTrend?.comparisonMinutes
+    const comparisonMinutesText = Number.isFinite(comparisonMinutes)
+        ? `${comparisonMinutes > 0 ? '+' : ''}${comparisonMinutes}분`
+        : ''
 
     return (
         <div>
@@ -98,7 +122,7 @@ const Report = () => {
 
                                     <div className="report_w_c_title">
                                         <p className="report_w_c_t_1">
-                                            {aiComment?.title ||
+                                            {aiComment?.headline ||
                                                 '이번 주 리포트를 준비하고 있어요.'}
                                         </p>
                                     </div>
@@ -106,7 +130,7 @@ const Report = () => {
                                     <img className="report_w_c_character" src={Comment_character} alt="" />
 
                                     <div className="report_w_c_list">
-                                        {(aiComment?.bullets || []).map((bullet, index) => (
+                                        {commentBullets.map((bullet, index) => (
                                             <div
                                                 className="report_w_c_item"
                                                 key={`${bullet}-${index}`}
@@ -239,12 +263,14 @@ const Report = () => {
                                                     <span>{avgRefreshTime.minutes}</span>분
                                                 </p>
 
-                                                <p className="report_w_g_box3_txt_3">
-                                                    {recoveryTrend?.diff_text || ''}
-                                                </p>
+                                                {comparisonMinutesText && (
+                                                    <p className="report_w_g_box3_txt_3">
+                                                        {comparisonMinutesText}
+                                                    </p>
+                                                )}
                                             </div>
                                             <p className="report_w_g_box3_txt_4">
-                                                {recoveryTrend?.diff_description || ''}
+                                                {recoveryTrend?.comparisonText || ''}
                                             </p>
                                         </div>
                                     </div>
@@ -256,7 +282,7 @@ const Report = () => {
                                 <div className="report_w_t_txt">
                                     <p>3-Time 밸런스</p>
                                     <p className="report_w_t_txt_2">
-                                        {timeBalance?.as_of_date || ''}
+                                        {timeBalance?.baseDateText || ''}
                                     </p>
                                 </div>
 
@@ -270,12 +296,12 @@ const Report = () => {
                                                     <div
                                                         className="report_w_t_progress_fill social"
                                                         style={{
-                                                            width: `${timeBalance?.social_time_ratio || 0}%`,
+                                                            width: `${timeBalance?.socialTimePercent || 0}%`,
                                                         }}
                                                     />
                                                 </div>
                                                 <span className="report_w_t_percent social_percent">
-                                                    {timeBalance?.social_time_ratio || 0}%
+                                                    {timeBalance?.socialTimePercent || 0}%
                                                 </span>
                                             </div>
                                         </div>
@@ -290,13 +316,13 @@ const Report = () => {
                                                     <div
                                                         className="report_w_t_progress_fill refresh"
                                                         style={{
-                                                            width: `${timeBalance?.refresh_time_ratio || 0}%`,
+                                                            width: `${timeBalance?.refreshTimePercent || 0}%`,
                                                         }}
                                                     />
                                                 </div>
 
                                                 <span className="report_w_t_percent">
-                                                    {timeBalance?.refresh_time_ratio || 0}%
+                                                    {timeBalance?.refreshTimePercent || 0}%
                                                 </span>
                                             </div>
                                         </div>
@@ -311,13 +337,13 @@ const Report = () => {
                                                     <div
                                                         className="report_w_t_progress_fill mytime"
                                                         style={{
-                                                            width: `${timeBalance?.my_time_ratio || 0}%`,
+                                                            width: `${timeBalance?.myTimePercent || 0}%`,
                                                         }}
                                                     />
                                                 </div>
 
                                                 <span className="report_w_t_percent">
-                                                    {timeBalance?.my_time_ratio || 0}%
+                                                    {timeBalance?.myTimePercent || 0}%
                                                 </span>
                                             </div>
                                         </div>
