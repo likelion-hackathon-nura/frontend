@@ -31,3 +31,9 @@ export function logoutUser() {
         method: 'POST',
     });
 }
+
+export function deleteUserAccount() {
+    return apiRequest('/api/auth/me', {
+        method: 'DELETE',
+    });
+}

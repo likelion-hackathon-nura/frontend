@@ -2,7 +2,10 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import './Mypage.css'
-import { logoutUser } from '../../api/mypage'
+import {
+    deleteUserAccount,
+    logoutUser,
+} from '../../api/mypage'
 import { clearTokens } from '../../api/tokenStorage'
 
 import BottomNav from '../../components/BottomNav/BottomNav'
@@ -13,6 +16,7 @@ const Mypage = () => {
 
     const navigate = useNavigate()
     const [isLoggingOut, setIsLoggingOut] = useState(false)
+    const [isDeleting, setIsDeleting] = useState(false)
 
     const handleLogout = async () => {
         if (isLoggingOut) {
@@ -41,6 +45,36 @@ const Mypage = () => {
             )
         } finally {
             setIsLoggingOut(false)
+        }
+    }
+
+    const handleDeleteAccount = async () => {
+        if (isDeleting) {
+            return
+        }
+
+        const confirmed = window.confirm(
+            '계정을 삭제하면 모든 정보가 삭제되며 되돌릴 수 없습니다.\n정말 계정을 삭제하시겠습니까?'
+        )
+
+        if (!confirmed) {
+            return
+        }
+
+        setIsDeleting(true)
+
+        try {
+            await deleteUserAccount()
+            clearTokens()
+            alert('계정이 삭제되었습니다.')
+            navigate('/', { replace: true })
+        } catch (error) {
+            alert(
+                error.message ||
+                '계정 삭제에 실패했습니다.'
+            )
+        } finally {
+            setIsDeleting(false)
         }
     }
 
@@ -82,8 +116,13 @@ const Mypage = () => {
                         </p>
                         <img src={NextArrow} alt="" />
                     </div>
-                    <div className="mypage_m_box02_1">
-                        <p>⛔️ 계정 삭제</p>
+                    <div
+                        className="mypage_m_box02_1"
+                        onClick={handleDeleteAccount}
+                    >
+                        <p>
+                            ⛔️ {isDeleting ? '삭제 중...' : '계정 삭제'}
+                        </p>
                         <img src={NextArrow} alt="" />
                     </div>
                 </div>
