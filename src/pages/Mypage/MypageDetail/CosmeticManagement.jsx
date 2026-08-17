@@ -78,6 +78,7 @@ const normalizeProduct = (product, index) => {
 
     return {
         id:
+            product.cosmeticId ||
             product.registeredCosmeticId ||
             product.registered_cosmetic_id ||
             product.id,
@@ -86,6 +87,7 @@ const normalizeProduct = (product, index) => {
             product.cosmetic_name ||
             '이름 없는 제품',
         date: formatDate(
+            product.registeredDate ||
             product.registeredAt ||
             product.registered_at
         ),
