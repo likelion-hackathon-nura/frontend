@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Login from './pages/Login/Login';
 import Home from './pages/Home/Home';
 import SignUp from './pages/Login/SignUp';
@@ -36,8 +37,11 @@ function OnboardingLayout() {
   );
 }
 
+const queryClient = new QueryClient();
+
 function App() {
   return (
+    <QueryClientProvider client={queryClient}>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login />} />
@@ -71,6 +75,7 @@ function App() {
         <Route path="/mypage/initial-settings" element={<EditInitialSettings />} />
       </Routes>
     </BrowserRouter>
+    </QueryClientProvider>
   );
 }
 
