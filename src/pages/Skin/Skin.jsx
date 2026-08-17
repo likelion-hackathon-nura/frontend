@@ -52,9 +52,14 @@ const Skin = () => {
         const loadTodaySkin = async () => {
             try {
                 const data = await getTodaySkin()
-                setIsCheckedIn(data.is_checked_in)
-                setStreakDays(data.streak_days)
-                setWeekData(data.weekly_records.map(item => ({ day: DAY_LABELS[item.day_of_week], status: item.status.toLowerCase() })))
+                setStreakDays(data.streakDays)
+                setWeekData(
+                    data.weeklyRecords.map(item => ({
+                        day: DAY_LABELS[item.dayOfWeek],
+                        status: item.status.toLowerCase(),
+                    }))
+                )
+                setCurrentStep(data.routineSummary?.completed ? 3 : 2)
             } catch (error) {
                 console.error('오늘의 피부 상태 조회 실패:', error)
             }
@@ -93,7 +98,6 @@ const Skin = () => {
     }
 
     // 1: 진정 케어, 2: 보습 케어, 3: 완료
-    // eslint-disable-next-line no-unused-vars
     const [currentStep, setCurrentStep] = useState(2)
 
     const recoverySteps = ['진정 케어', '보습 케어', '완료']

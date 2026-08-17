@@ -156,7 +156,7 @@ const Recovery03 = ({ onComplete }) => {
                 <button
                     type="button"
                     className="recovery03_complete_btn"
-                    onClick={onComplete}
+                    onClick={() => onComplete(completed)}
                 >
                     완료
                 </button>
