@@ -53,3 +53,46 @@ export const getTodaySkin = () => apiRequest('/api/skin/today')
 export const getCheckinHistory = () => apiRequest('/api/checkin/history')
 
 export const getCheckinDetail = checkinId => apiRequest(`/api/checkin/${checkinId}`)
+
+export function analyzeCosmeticOcr(photo) {
+    const formData = new FormData()
+
+    formData.append('photo', photo)
+
+    return apiRequest('/api/cosmetics/ocr', {
+        method: 'POST',
+        body: formData,
+    })
+}
+
+export function registerCosmetic({
+    cosmeticBrand,
+    cosmeticName,
+    cosmeticType,
+    cosmeticIngredients,
+    coreIngredients,
+    cosmeticUrl,
+}) {
+    return apiRequest('/api/cosmetics', {
+        method: 'POST',
+        body: {
+            cosmeticBrand,
+            cosmeticName,
+            cosmeticType,
+            cosmeticIngredients,
+            coreIngredients,
+            cosmeticUrl,
+        },
+    })
+}
+
+export const getRegisteredCosmetics = () =>
+    apiRequest('/api/cosmetics')
+
+export const getRegisteredCosmeticDetail = cosmeticId =>
+    apiRequest(`/api/cosmetics/${cosmeticId}`)
+
+export const deleteRegisteredCosmetic = cosmeticId =>
+    apiRequest(`/api/cosmetics/${cosmeticId}`, {
+        method: 'DELETE',
+    })
