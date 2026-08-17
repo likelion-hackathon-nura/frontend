@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 
 import './CheckIn03.css'
 
@@ -6,7 +6,10 @@ import CheckinPhotoIcon from '../../../assets/images/checkin_photo_icon.svg'
 import NextArrow from '../../../assets/images/next_arrow.svg'
 import CheckinTipIcon from '../../../assets/images/checkin_tip.svg'
 
-const CheckIn03 = ({ onNext }) => {
+const CheckIn03 = ({ photo, onPhotoChange, onNext }) => {
+    const fileInputRef = useRef(null)
+    const handleFileChange = event => onPhotoChange(event.target.files?.[0] || null)
+
     return (
         <div className="checkin03_wrap">
             <div className="checkin03_top">
@@ -17,8 +20,11 @@ const CheckIn03 = ({ onNext }) => {
 
                 <div className="checkin03_m_photo">
                     <img src={CheckinPhotoIcon} alt="" />
-                    <p>정면 사진을 업로드 해주세요.</p>
-                    <button className='checkin03_m_p_btn'>사진 업로드하기<img src={NextArrow} alt="" /></button>
+                    <p>{photo ? photo.name : '정면 사진을 업로드 해주세요.'}</p>
+                    <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} hidden />
+                    <button type="button" className='checkin03_m_p_btn' onClick={() => fileInputRef.current?.click()}>
+                        {photo ? '사진 다시 선택하기' : '사진 업로드하기'}<img src={NextArrow} alt="" />
+                    </button>
                 </div>
 
                 <div className="checkin03_m_tip">
@@ -39,9 +45,9 @@ const CheckIn03 = ({ onNext }) => {
                     </div>
                 </div>
 
-                <p className='checkin03_skip'>건너뛰기</p>
-                
-                <button onClick={onNext} className='checkin_bot_btn'>결과 보기</button>
+                <p className='checkin03_skip' onClick={() => onNext(null)}>건너뛰기</p>
+
+                <button onClick={() => onNext(photo)} className='checkin_bot_btn'>결과 보기</button>
 
             </div>
 

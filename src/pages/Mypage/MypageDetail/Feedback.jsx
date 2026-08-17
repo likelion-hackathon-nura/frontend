@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import './Feedback.css'
+import { submitScheduleFeedback } from '../../../api/mypage'
 
 import PrevBtn from '../../../assets/images/prev_btn.svg'
 import FeedbackIcon01 from '../../../assets/images/feedback_icon_1.svg'
@@ -36,28 +37,80 @@ const categories = [
     },
 ]
 
+
+const weightOptions = [
+    {
+        label: '부족했어요',
+        value: 'LOW',
+    },
+    {
+        label: '적당했어요',
+        value: 'NORMAL',
+    },
+    {
+        label: '많았어요',
+        value: 'HIGH',
+    },
+]
+
+
 const Feedback = () => {
     const navigate = useNavigate()
 
     const [selectedCategory, setSelectedCategory] = useState('')
     const [selectedTime, setSelectedTime] = useState('')
-    const [adjustment, setAdjustment] = useState('')
+    const [timeWeights, setTimeWeights] = useState({
+        refresh: '',
+        my: '',
+    })
     const [opinion, setOpinion] = useState('')
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
     const handleCategory = (categoryId) => {
         setSelectedCategory(categoryId)
 
         if (categoryId !== 'time') {
             setSelectedTime('')
-            setAdjustment('')
+            setTimeWeights({
+                refresh: '',
+                my: '',
+            })
         }
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
 
-        // TODO: 피드백 전송 API 연동
-        navigate('/mypage')
+        if (!selectedCategory) {
+            alert('피드백 카테고리를 선택해주세요.')
+            return
+        }
+
+        setIsSubmitting(true)
+
+        try {
+            await submitScheduleFeedback({
+                myWeight:
+                    selectedCategory === 'time'
+                        ? timeWeights.my || null
+                        : null,
+                refreshWeight:
+                    selectedCategory === 'time'
+                        ? timeWeights.refresh || null
+                        : null,
+                feedbackContents: opinion.trim(),
+            })
+
+            alert('피드백이 등록되었습니다.')
+            navigate('/mypage')
+        } catch (error) {
+            alert(
+                error.message ||
+                '피드백 등록에 실패했습니다.'
+            )
+        } finally {
+            setIsSubmitting(false)
+        }
     }
 
     return (
@@ -157,24 +210,24 @@ const Feedback = () => {
                         </p>
 
                         <div className="feedback_adjustment_buttons">
-                            {[
-                                '부족했어요',
-                                '적당했어요',
-                                '많았어요',
-                            ].map((item) => (
+                            {weightOptions.map((option) => (
                                 <button
                                     type="button"
-                                    key={item}
+                                    key={option.value}
+                                    disabled={!selectedTime}
                                     className={
-                                        adjustment === item
+                                        timeWeights[selectedTime] === option.value
                                             ? 'active'
                                             : ''
                                     }
                                     onClick={() =>
-                                        setAdjustment(item)
+                                        setTimeWeights((prev) => ({
+                                            ...prev,
+                                            [selectedTime]: option.value,
+                                        }))
                                     }
                                 >
-                                    {item}
+                                    {option.label}
                                 </button>
                             ))}
                         </div>
@@ -210,8 +263,9 @@ const Feedback = () => {
                     <button
                         type="submit"
                         className="feedback_submit"
+                        disabled={isSubmitting}
                     >
-                        완료
+                        {isSubmitting ? '전송 중...' : '완료'}
                     </button>
                 </div>
             </form>
