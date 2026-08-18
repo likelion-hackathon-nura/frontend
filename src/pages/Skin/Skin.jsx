@@ -20,16 +20,25 @@ import Line from '../../assets/images/skin_line.svg'
 import AiComment from '../../assets/images/comment_logo.svg'
 import CheckWhite from '../../assets/images/check_white.svg'
 import CheckGreen from '../../assets/images/check_green.svg'
-import Product01 from '../../assets/images/skin_product_1.svg'
-import Product02 from '../../assets/images/skin_product_2.svg'
+import Product01 from '../../assets/images/recovery_product_1.svg'
+import Product02 from '../../assets/images/recovery_product_2.svg'
+import Product03 from '../../assets/images/recovery_product_3.svg'
+import Product04 from '../../assets/images/recovery_product_4.svg'
 import SkinTime from '../../assets/images/skin_time.svg'
 import SkinLock from '../../assets/images/skin_lock_icon.svg'
 
 
 const getTodayDate = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0]
 const DAY_LABELS = { MON: '월', TUE: '화', WED: '수', THU: '목', FRI: '금', SAT: '토', SUN: '일' }
+const PRODUCT_IMAGES = [Product01, Product02, Product03, Product04]
 
 const Skin = () => {
+
+    const [usedProductImages] = useState(() =>
+        [...PRODUCT_IMAGES]
+            .sort(() => Math.random() - 0.5)
+            .slice(0, 2)
+    )
 
     const [isCheckedIn, setIsCheckedIn] = useState(false)
 
@@ -299,7 +308,7 @@ const Skin = () => {
                                         <p className='skin_p_title'>사용한 제품</p>
                                         <div className="skin_product_all">
                                             <div className="skin_product">
-                                                <img src={Product01} alt="" />
+                                                <img src={usedProductImages[0]} alt="" />
                                                 <div className="skin_p_box">
                                                     <div className="skin_p_b_title">
                                                         <span>STEP 1</span>
@@ -314,7 +323,7 @@ const Skin = () => {
                                             </div>
 
                                             <div className="skin_product">
-                                                <img src={Product02} alt="" />
+                                                <img src={usedProductImages[1]} alt="" />
                                                 <div className="skin_p_box">
                                                     <div className="skin_p_b_title">
                                                         <span>STEP 2</span>
