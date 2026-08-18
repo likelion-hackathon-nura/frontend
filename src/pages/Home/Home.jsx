@@ -144,15 +144,21 @@ function groupBlocksByCategory(blocks) {
   return grouped;
 }
 
-// Today ring (page 1): dynamic 3-segment ring driven by real social/refresh/my
-// minute proportions. Same visual language (gap size, tick overlay, bead caps)
-// as the My Time ring below, just one arc per category instead of split arcs.
-const TODAY_RING_ORDER = ['refresh', 'social', 'mytime'];
-const TODAY_RING_STYLE = {
+const MYTIME_RING_CX = 125;
+const MYTIME_RING_CY = 125;
+const MYTIME_RING_R = 109.5;
+const MYTIME_RING_GAP_DEG = 18;
+
+const RING_STYLE = {
   refresh: { base: '#F7C1C1', tick: '#F18E8E' },
   social: { base: '#AEADC1', tick: '#6B698E' },
   mytime: { base: '#FAF0DD', tick: '#F5E3C1' },
 };
+
+// Today ring (page 1): one arc per category, sized by real social/refresh/my
+// minute proportions. Same visual language (gap size, tick overlay, bead caps)
+// as the block ring on page 2, just grouped by category instead of per block.
+const TODAY_RING_ORDER = ['refresh', 'social', 'mytime'];
 
 function buildTodayRingSegments(percents) {
   const usableDeg = 360 - MYTIME_RING_GAP_DEG * TODAY_RING_ORDER.length;
@@ -162,12 +168,53 @@ function buildTodayRingSegments(percents) {
     const start = angle;
     const end = angle + subDeg;
     angle = end + MYTIME_RING_GAP_DEG;
-    return { key, start, end, ...TODAY_RING_STYLE[key] };
+    return { key, start, end, ...RING_STYLE[key] };
   });
 }
 
-function RingArcs({ percents }) {
-  const segments = buildTodayRingSegments(percents);
+// Block ring (page 2): one arc per time block, in chronological order and sized
+// by each block's duration, so the ring only shows what the server actually
+// allocated. No blocks -> same empty look as page 1 (gray ring, three category
+// beads at the top, no needle).
+function buildBlockRingSegments(blocks) {
+  const list = (blocks || [])
+    .map((block) => ({
+      key: String(block.blockId),
+      category: BLOCK_CATEGORY_TO_KEY[block.category],
+      startAt: new Date(block.startAt),
+      endAt: new Date(block.endAt),
+    }))
+    .filter((block) => block.category && block.endAt > block.startAt)
+    .sort((a, b) => a.startAt - b.startAt);
+
+  const totalMs = list.reduce((sum, block) => sum + (block.endAt - block.startAt), 0);
+  if (!totalMs) return buildTodayRingSegments({});
+
+  // Keep the gaps from eating the whole circle when there are many blocks.
+  const gapDeg = Math.min(MYTIME_RING_GAP_DEG, 144 / list.length);
+  const usableDeg = 360 - gapDeg * list.length;
+
+  let angle = 0;
+  return list.map((block) => {
+    const subDeg = ((block.endAt - block.startAt) / totalMs) * usableDeg;
+    const start = angle;
+    const end = angle + subDeg;
+    angle = end + gapDeg;
+    return { ...block, start, end, ...RING_STYLE[block.category] };
+  });
+}
+
+// Needle angle for the segment that contains `now`, interpolated by how far
+// into that block we are. Returns null when no block is running right now.
+function findRingNeedleAngle(segments, now) {
+  const current = segments.find((seg) => now >= seg.startAt && now <= seg.endAt);
+  if (!current) return null;
+  const progress = (now - current.startAt) / (current.endAt - current.startAt);
+  return current.start + (current.end - current.start) * progress;
+}
+
+function RingArcs({ segments }) {
+  // One gray connector per boundary between segments (wraps from the last segment back to the first).
   const gaps = segments.map((seg, i) => {
     const next = segments[(i + 1) % segments.length];
     const to = i === segments.length - 1 ? 360 : next.start;
@@ -207,53 +254,6 @@ function RingArcs({ percents }) {
   );
 }
 
-// My Time tab ring: built clockwise from 12 o'clock, split per category entry
-// count so Refresh Time (3 entries) and My Time (2 entries) render as separate
-// touching arcs instead of one solid arc each, interleaved pink/yellow/purple
-// instead of grouped by category. Used only on the My Time page.
-const MYTIME_RING_CX = 125;
-const MYTIME_RING_CY = 125;
-const MYTIME_RING_R = 109.5;
-const MYTIME_RING_GAP_DEG = 18;
-
-const MYTIME_RING_CATEGORIES = {
-  refresh: { percent: 40, count: 3, base: '#F7C1C1', tick: '#F18E8E' },
-  mytime: { percent: 26, count: 2, base: '#FAF0DD', tick: '#F5E3C1' },
-  social: { percent: 34, count: 1, base: '#AEADC1', tick: '#6B698E' },
-};
-
-// Clockwise color order: pink, yellow, pink, yellow, pink, purple.
-const MYTIME_SEGMENT_ORDER = ['refresh', 'mytime', 'refresh', 'mytime', 'refresh', 'social'];
-
-function buildMyTimeRingSegments() {
-  const totalCount = MYTIME_SEGMENT_ORDER.length;
-  const usableDeg = 360 - MYTIME_RING_GAP_DEG * totalCount;
-  const catCounters = {};
-
-  const segments = [];
-  let angle = 0;
-  MYTIME_SEGMENT_ORDER.forEach((key) => {
-    const cat = MYTIME_RING_CATEGORIES[key];
-    const idx = catCounters[key] || 0;
-    catCounters[key] = idx + 1;
-    const subDeg = ((cat.percent / 100) * usableDeg) / cat.count;
-    const start = angle;
-    const end = angle + subDeg;
-    segments.push({ key: `${key}-${idx}`, category: key, start, end, base: cat.base, tick: cat.tick });
-    angle = end + MYTIME_RING_GAP_DEG;
-  });
-  return segments;
-}
-
-const MYTIME_RING_SEGMENTS = buildMyTimeRingSegments();
-
-// One gray connector per boundary between segments (wraps from the last segment back to the first).
-const MYTIME_RING_GAPS = MYTIME_RING_SEGMENTS.map((seg, i) => {
-  const next = MYTIME_RING_SEGMENTS[(i + 1) % MYTIME_RING_SEGMENTS.length];
-  const to = i === MYTIME_RING_SEGMENTS.length - 1 ? 360 : next.start;
-  return { key: `gap-${i}`, from: seg.end, to };
-});
-
 function myTimeRingPoint(angleDeg, r = MYTIME_RING_R) {
   const rad = (angleDeg * Math.PI) / 180;
   return { x: MYTIME_RING_CX + r * Math.sin(rad), y: MYTIME_RING_CY - r * Math.cos(rad) };
@@ -264,46 +264,6 @@ function myTimeRingArcPath(startAngle, endAngle, r = MYTIME_RING_R) {
   const end = myTimeRingPoint(endAngle, r);
   const largeArc = endAngle - startAngle > 180 ? 1 : 0;
   return `M ${start.x.toFixed(2)},${start.y.toFixed(2)} A ${r},${r} 0 ${largeArc},1 ${end.x.toFixed(2)},${end.y.toFixed(2)}`;
-}
-
-function myTimeRingNeedlePoint(segmentKey, r) {
-  const seg = MYTIME_RING_SEGMENTS.find((s) => s.key === segmentKey);
-  const midAngle = (seg.start + seg.end) / 2;
-  return myTimeRingPoint(midAngle, r);
-}
-
-function MyTimeRingArcs() {
-  return (
-    <g>
-      {MYTIME_RING_SEGMENTS.map((seg) => (
-        <path key={seg.key} d={myTimeRingArcPath(seg.start, seg.end)} fill="none" stroke={seg.base} strokeWidth="30" strokeLinecap="round" />
-      ))}
-      {MYTIME_RING_SEGMENTS.map((seg) => (
-        <path
-          key={`${seg.key}-tick`}
-          d={myTimeRingArcPath(seg.start, seg.end)}
-          fill="none"
-          stroke={seg.tick}
-          strokeOpacity="0.5"
-          strokeWidth="9"
-          strokeDasharray="2.5 4"
-        />
-      ))}
-      {MYTIME_RING_GAPS.map((gap) => (
-        <path key={gap.key} d={myTimeRingArcPath(gap.from, gap.to)} fill="none" stroke="#E8E8E8" strokeWidth="30" />
-      ))}
-      {MYTIME_RING_SEGMENTS.map((seg) => {
-        const startPt = myTimeRingPoint(seg.start);
-        const endPt = myTimeRingPoint(seg.end);
-        return (
-          <g key={`${seg.key}-beads`}>
-            <circle cx={startPt.x} cy={startPt.y} r="15" fill={seg.tick} />
-            <circle cx={endPt.x} cy={endPt.y} r="15" fill={seg.tick} />
-          </g>
-        );
-      })}
-    </g>
-  );
 }
 
 function Home() {
@@ -373,6 +333,9 @@ function Home() {
 
   const groupedEntries = groupBlocksByCategory(homeData?.blocks);
   const currentCategoryLabel = findCurrentCategoryLabel(homeData?.blocks, now);
+  const todayRingSegments = buildTodayRingSegments(percents);
+  const blockRingSegments = buildBlockRingSegments(homeData?.blocks);
+  const needleAngle = findRingNeedleAngle(blockRingSegments, now);
 
   if (homeError && !(homeError instanceof ApiError && homeError.code === 'ONBOARDING_NOT_COMPLETED')) {
     return (
@@ -449,7 +412,7 @@ function Home() {
           <>
             <div className="home-ring-wrap">
               <svg className="home-ring-svg" viewBox="0 0 250 250" width="100%" height="100%">
-                <RingArcs percents={percents} />
+                <RingArcs segments={todayRingSegments} />
                 <circle cx="125" cy="125" r="84.5" fill="#FFEDED" stroke="#FFE0D6" strokeWidth="1" />
               </svg>
               <div className="home-ring-center">{formatClock(now)}</div>
@@ -530,18 +493,22 @@ function Home() {
           <>
             <div className="home-ring-wrap">
               <svg className="home-ring-svg" viewBox="0 0 250 250" width="100%" height="100%">
-                <MyTimeRingArcs />
+                <RingArcs segments={blockRingSegments} />
                 <circle cx="125" cy="125" r="84.5" fill="#FFEDED" stroke="#FFE0D6" strokeWidth="1" />
-                <line
-                  x1={myTimeRingNeedlePoint('mytime-0', 90).x}
-                  y1={myTimeRingNeedlePoint('mytime-0', 90).y}
-                  x2={myTimeRingNeedlePoint('mytime-0', 124).x}
-                  y2={myTimeRingNeedlePoint('mytime-0', 124).y}
-                  stroke="#D27373"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                />
-                <circle cx={myTimeRingNeedlePoint('mytime-0', 124).x} cy={myTimeRingNeedlePoint('mytime-0', 124).y} r="4.5" fill="#D27373" />
+                {needleAngle !== null && (
+                  <>
+                    <line
+                      x1={myTimeRingPoint(needleAngle, 90).x}
+                      y1={myTimeRingPoint(needleAngle, 90).y}
+                      x2={myTimeRingPoint(needleAngle, 124).x}
+                      y2={myTimeRingPoint(needleAngle, 124).y}
+                      stroke="#D27373"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                    />
+                    <circle cx={myTimeRingPoint(needleAngle, 124).x} cy={myTimeRingPoint(needleAngle, 124).y} r="4.5" fill="#D27373" />
+                  </>
+                )}
               </svg>
               <div className="home-ring-center">
                 <p className="home-ring-center-label">현재 시간은</p>
