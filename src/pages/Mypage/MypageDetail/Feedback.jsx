@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 
 import './Feedback.css'
 import { submitScheduleFeedback } from '../../../api/mypage'
+import { submitSkinFeedback } from '../../../api/skin'
 
 import PrevBtn from '../../../assets/images/prev_btn.svg'
 import FeedbackIcon01 from '../../../assets/images/feedback_icon_1.svg'
@@ -86,20 +87,29 @@ const Feedback = () => {
             return
         }
 
+        if (selectedCategory === 'recovery' && !opinion.trim()) {
+            alert('피드백 내용을 입력해주세요.')
+            return
+        }
+
         setIsSubmitting(true)
 
         try {
-            await submitScheduleFeedback({
-                myWeight:
-                    selectedCategory === 'time'
-                        ? timeWeights.my || null
-                        : null,
-                refreshWeight:
-                    selectedCategory === 'time'
-                        ? timeWeights.refresh || null
-                        : null,
-                feedbackContents: opinion.trim(),
-            })
+            if (selectedCategory === 'recovery') {
+                await submitSkinFeedback(opinion.trim())
+            } else {
+                await submitScheduleFeedback({
+                    myWeight:
+                        selectedCategory === 'time'
+                            ? timeWeights.my || null
+                            : null,
+                    refreshWeight:
+                        selectedCategory === 'time'
+                            ? timeWeights.refresh || null
+                            : null,
+                    feedbackContents: opinion.trim(),
+                })
+            }
 
             alert('피드백이 등록되었습니다.')
             navigate('/mypage')

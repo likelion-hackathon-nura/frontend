@@ -18,30 +18,35 @@ import RecoveryIcon02 from '../../assets/images/recovery_icon_2.svg'
 import RecoveryTime from '../../assets/images/skin_time.svg'
 import RecoveryLine from '../../assets/images/skin_line.svg'
 import RecoveryUseProduct01 from '../../assets/images/recovery_product_1.svg'
+import RecoveryUseProduct02 from '../../assets/images/recovery_product_2.svg'
+import RecoveryUseProduct03 from '../../assets/images/recovery_product_3.svg'
 import RecoveryUseProduct04 from '../../assets/images/recovery_product_4.svg'
 
 const getRoutineData = response => response?.data ?? response
 
-const createMatchedProduct = (stepData, fallbackImage) => {
+const productImageMap = {
+    LIGHT_GREEN: RecoveryUseProduct01,
+    GREEN: RecoveryUseProduct02,
+    YELLOW: RecoveryUseProduct03,
+    BLUE: RecoveryUseProduct04,
+}
+
+const createMatchedProduct = stepData => {
     if (!stepData?.cosmetic_name) return null
 
-    let ingredients = stepData.recommended_ingredients || ''
-
-    try {
-        const parsedIngredients = JSON.parse(ingredients)
-
-        if (Array.isArray(parsedIngredients)) {
-            ingredients = parsedIngredients.join(', ')
-        }
-    } catch {
-        ingredients = stepData.recommended_ingredients || ''
-    }
+    const productFeatures = Array.isArray(stepData.product_features)
+        ? stepData.product_features
+        : []
 
     return {
-        name: stepData.cosmetic_name,
-        description: stepData.reason || stepData.cosmetic_brand,
-        ingredients,
-        image: stepData.cosmetic_url || fallbackImage,
+        name: [stepData.cosmetic_brand, stepData.cosmetic_name]
+            .filter(Boolean)
+            .join(' '),
+        description: productFeatures[0] || stepData.reason || '',
+        ingredients: productFeatures[1] || '',
+        image:
+            productImageMap[stepData.category_color] ||
+            RecoveryUseProduct01,
     }
 }
 
@@ -104,28 +109,20 @@ const Recovery = () => {
         }
     }
 
-    const handleRoutineComplete = async completed => {
+    const handleRoutineComplete = async () => {
         try {
-            if (completed === 'yes') {
-                await completeTodaySkinRoutine()
-            }
-
-            navigate('/skin')
+            await completeTodaySkinRoutine()
+            setStep(3)
         } catch (error) {
             console.error('회복 루틴 완료 처리 실패:', error)
             alert(error.message || '회복 루틴 완료 처리에 실패했습니다.')
         }
     }
 
-    const matchedProduct = createMatchedProduct(
-        routineSteps[0],
-        RecoveryUseProduct01
-    )
+    const handleRecoveryFinish = () => navigate('/skin')
 
-    const matchedProduct02 = createMatchedProduct(
-        routineSteps[1],
-        RecoveryUseProduct04
-    )
+    const matchedProduct = createMatchedProduct(routineSteps[0])
+    const matchedProduct02 = createMatchedProduct(routineSteps[1])
 
     if (loading || !routine) {
         return (
@@ -152,7 +149,7 @@ const Recovery = () => {
                         <p className="recovery_top_1">퇴근 체크인 분석 결과</p>
                         <p className="recovery_top_2">오늘은 {routineSteps.length}단계로<br />회복 모드를 안내해드릴게요.</p>
                         <p className="recovery_top_3">
-                            {routineSteps[0]?.reason ||
+                            {routine.summary_comment ||
                                 '오늘의 피부 상태에 맞는 회복 루틴을 준비했어요.'}
                         </p>
                     </div>
@@ -164,10 +161,10 @@ const Recovery = () => {
                             <div className="recovery_step_content">
                                 <div className="recovery_step_title">
                                     <span>STEP 1</span>
-                                    <p>{routineSteps[0]?.title || '진정'}</p>
+                                    <p>{routineSteps[0]?.care_type_kr || routineSteps[0]?.title || '진정'}</p>
                                 </div>
                                 <p>
-                                    {routineSteps[0]?.description ||
+                                    {routineSteps[0]?.title ||
                                         '피부를 외부 자극으로부터 가라앉혀요.'}
                                 </p>
                             </div>
@@ -184,10 +181,10 @@ const Recovery = () => {
                             <div className="recovery_step_content">
                                 <div className="recovery_step_title">
                                     <span>STEP 2</span>
-                                    <p>{routineSteps[1]?.title || '보습'}</p>
+                                    <p>{routineSteps[1]?.care_type_kr || routineSteps[1]?.title || '보습'}</p>
                                 </div>
                                 <p>
-                                    {routineSteps[1]?.description ||
+                                    {routineSteps[1]?.title ||
                                         '수분을 채워 피부 장벽을 보호해요.'}
                                 </p>
                             </div>
@@ -220,12 +217,12 @@ const Recovery = () => {
                     matchedProduct={matchedProduct02}
                     stepData={routineSteps[1]}
                     previousStepData={routineSteps[0]}
-                    onComplete={handleNext}
+                    onComplete={handleRoutineComplete}
                 />
             )}
 
             {step === 3 && (
-                <Recovery03 onComplete={handleRoutineComplete} />
+                <Recovery03 onComplete={handleRecoveryFinish} />
             )}
 
         </div>

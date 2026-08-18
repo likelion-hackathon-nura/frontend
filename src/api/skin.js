@@ -48,6 +48,13 @@ export function completeTodaySkinRoutine() {
     });
 }
 
+export function submitSkinFeedback(contents) {
+    return apiRequest('/api/skin-feedback', {
+        method: 'POST',
+        body: { contents },
+    });
+}
+
 export const getTodaySkin = () => apiRequest('/api/skin/today')
 
 export const getCheckinHistory = () => apiRequest('/api/checkin/history')
