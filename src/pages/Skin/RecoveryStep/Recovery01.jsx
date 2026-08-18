@@ -14,6 +14,8 @@ const Recovery01 = ({ onNext, matchedProduct, stepData, nextStepData, }) => {
             return ['병풀추출물(CICA)', '판테놀', '알란토인']
         }
 
+        if (Array.isArray(value)) return value
+
         try {
             const parsedIngredients = JSON.parse(value)
 
@@ -31,16 +33,18 @@ const Recovery01 = ({ onNext, matchedProduct, stepData, nextStepData, }) => {
         return ['병풀추출물(CICA)', '판테놀', '알란토인']
     })()
 
-    const precautions = stepData?.precautions
+    const precautions = Array.isArray(stepData?.precautions)
         ? stepData.precautions
-            .split(/\n+|•/)
-            .map(precaution => precaution.trim())
-            .filter(Boolean)
-        : [
-            '피부가 많이 예민한 날에는 문지르기보다 가볍게 눌러 흡수시켜주세요.',
-            '세안 후 3분 이내에 사용하면 수분 손실을 줄이는 데 도움이 됩니다.',
-            '붉은기가 심한 부위는 얇게 한 번 더 레이어링해도 좋아요.',
-        ]
+        : stepData?.precautions
+            ? stepData.precautions
+                .split(/\n+|•/)
+                .map(precaution => precaution.trim())
+                .filter(Boolean)
+            : [
+                '피부가 많이 예민한 날에는 문지르기보다 가볍게 눌러 흡수시켜주세요.',
+                '세안 후 3분 이내에 사용하면 수분 손실을 줄이는 데 도움이 됩니다.',
+                '붉은기가 심한 부위는 얇게 한 번 더 레이어링해도 좋아요.',
+            ]
 
 
     return (
@@ -49,20 +53,20 @@ const Recovery01 = ({ onNext, matchedProduct, stepData, nextStepData, }) => {
             <div className="recovery01_progress">
                 <div className="recovery01_progress_step active">
                     <span>1</span>
-                    <p>{stepData?.title || '진정'}</p>
+                    <p>{stepData?.care_type_kr || stepData?.title || '진정'}</p>
                 </div>
 
                 <div className="recovery01_progress_line" />
 
                 <div className="recovery01_progress_step">
                     <span>2</span>
-                    <p>{nextStepData?.title || '보습'}</p>
+                    <p>{nextStepData?.care_type_kr || nextStepData?.title || '보습'}</p>
                 </div>
             </div>
 
             <div className="recovery01_top">
                 <div className="recovery01_title">
-                    <span>STEP 1</span>
+                    <span>STEP {stepData?.step_order || 1}</span>
                     <p>{stepData?.title || '먼저 피부 자극을 진정시켜볼게요.'}</p>
                 </div>
 
@@ -85,7 +89,8 @@ const Recovery01 = ({ onNext, matchedProduct, stepData, nextStepData, }) => {
                         <p>추천 성분</p>
                     </div>
                     <p className="recovery01_section_description">
-                        자극을 완화하고 피부를 편안하게 진정시키는 데 도움이 되는 성분이에요.
+                        {stepData?.recommended_ingredient_description ||
+                            '자극을 완화하고 피부를 편안하게 진정시키는 데 도움이 되는 성분이에요.'}
                     </p>
                     <div className="recovery01_tags">
                         {ingredients.map((ingredient, index) => (
@@ -120,15 +125,19 @@ const Recovery01 = ({ onNext, matchedProduct, stepData, nextStepData, }) => {
                             <div className="recovery01_product_content">
                                 <p>{matchedProduct.name}</p>
 
-                                <div className='recovery_product_box'>
-                                    <img src={CheckTip} alt="" />
-                                    <span>{matchedProduct.description}</span>
-                                </div>
+                                {matchedProduct.description && (
+                                    <div className="recovery_product_box">
+                                        <img src={CheckTip} alt="" />
+                                        <span>{matchedProduct.description}</span>
+                                    </div>
+                                )}
 
-                                <div >
-                                    <img src={CheckTip} alt="" />
-                                    <span>{matchedProduct.ingredients}</span>
-                                </div>
+                                {matchedProduct.ingredients && (
+                                    <div>
+                                        <img src={CheckTip} alt="" />
+                                        <span>{matchedProduct.ingredients}</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}

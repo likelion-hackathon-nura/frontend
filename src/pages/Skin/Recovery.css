@@ -58,13 +58,16 @@
     letter-spacing: -2%;
     color: #7B7578;
     margin-top: 10px;
+    width: 350px;
+    white-space: pre-line;
 }
 
 /* ======================================================= */
 
 .recovery_step_list {
     width: 350px;
-    height: 189px;
+    height: auto;
+    min-height: 189px;
     background-color: white;
     border-radius: 10px;
     box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.05);
@@ -96,7 +99,7 @@
     color: #60C2B4;
 }
 
-.recovery_step_content{
+.recovery_step_content {
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -104,9 +107,13 @@
     font-size: 13px;
     letter-spacing: -2%;
     color: #7B7578;
+    flex: 1;
+    min-width: 0;
+    margin: 0 12px;
+    line-height: 1.4;
 }
 
-.recovery_step_time{
+.recovery_step_time {
     display: flex;
     flex-direction: column;
     font-weight: 500;
