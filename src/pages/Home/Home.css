@@ -15,25 +15,22 @@
   color: var(--color-text-primary);
 }
 
+/* 근무 형태에 따라 문구 길이가 달라지므로 아이콘은 텍스트 뒤에 흐름으로 붙인다. */
 .home-today-icon {
-  top: 86px;
-  left: 210px;
-  position: absolute;
+  flex-shrink: 0;
   width: auto;
   height: 26px;
+  margin-bottom: 2px;
 }
 
 .home-today {
   height: 90px;
   display: flex;
-  align-items: center;
-  gap: 10px;
+  align-items: flex-end;
+  gap: 6px;
 }
 
 .home-today h1 {
-  left: 22px;
-  top: 84px;
-  position: absolute;
   font-size: var(--font-size-20);
   font-weight: var(--font-bold);
 }
@@ -333,6 +330,12 @@
   font-size: var(--font-size-15);
   font-weight: var(--font-medium);
   white-space: nowrap;
+}
+
+.home-stat-empty {
+  font-size: 10px;
+  font-weight: var(--font-regular);
+  color: var(--color-text-secondary);
 }
 
 .home-stat-tag {

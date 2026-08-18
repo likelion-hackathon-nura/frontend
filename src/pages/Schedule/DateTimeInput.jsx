@@ -1,23 +1,54 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import DatePickerModal from '../../components/DatePickerModal/DatePickerModal';
 import TimePickerModal from '../../components/TimePickerModal/TimePickerModal';
 import { ReactComponent as BackIcon } from '../../assets/images/backbutton.svg';
 import { ReactComponent as SocialIcon } from '../../assets/images/social_icon.svg';
 import { ReactComponent as RefreshIcon } from '../../assets/images/refresh_icon.svg';
 import { ReactComponent as MytimeIcon } from '../../assets/images/mytime_icon.svg';
+import { checkEvent, createEvent } from '../../api/event';
+import { ApiError } from '../../api/client';
 import './DateTimeInput.css';
 
 const CATEGORY_META = {
-  social: { Icon: SocialIcon, label: 'Social Time' },
-  refresh: { Icon: RefreshIcon, label: 'Refresh Time' },
-  mytime: { Icon: MytimeIcon, label: 'My Time' },
+  social: { Icon: SocialIcon, label: 'Social Time', apiValue: 'SOCIAL' },
+  refresh: { Icon: RefreshIcon, label: 'Refresh Time', apiValue: 'REFRESH' },
+  mytime: { Icon: MytimeIcon, label: 'My Time', apiValue: 'MY' },
 };
 
-// Mock Refresh Time impact: a fixed daily baseline minus the new schedule's
-// duration when it's not itself a Refresh Time entry (no backend yet).
-const REFRESH_BASELINE_MINUTES = 270; // 4시간 30분
-const REFRESH_MIN_RECOMMENDED_MINUTES = 240; // 4시간
+function pad(n) {
+  return String(n).padStart(2, '0');
+}
+
+// DatePickerModal은 연도를 고르지 않으므로, 선택한 월/일이 이미 지났으면 다음 해로 본다.
+function resolveYear(month, day) {
+  const now = new Date();
+  const picked = new Date(now.getFullYear(), month - 1, day);
+  const todayOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return picked < todayOnly ? now.getFullYear() + 1 : now.getFullYear();
+}
+
+// 종료 시간이 시작 시간보다 빠르거나 같으면 자정을 넘긴 일정으로 보고 다음 날로 넘긴다.
+function buildEventPayload({ category, title, date, startTime, endTime }) {
+  const year = resolveYear(date.month, date.day);
+  const [startHour, startMinute] = startTime.split(':').map(Number);
+  const [endHour, endMinute] = endTime.split(':').map(Number);
+
+  const startAt = new Date(year, date.month - 1, date.day, startHour, startMinute);
+  const endAt = new Date(year, date.month - 1, date.day, endHour, endMinute);
+  if (endAt <= startAt) endAt.setDate(endAt.getDate() + 1);
+
+  const toIso = (d) =>
+    `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:00`;
+
+  return {
+    category: CATEGORY_META[category].apiValue,
+    eventName: title,
+    startAt: toIso(startAt),
+    endAt: toIso(endAt),
+  };
+}
 
 function CalendarIcon() {
   return (
@@ -46,19 +77,10 @@ function ChevronRight() {
   );
 }
 
-function minutesOfDuration(start, end) {
-  if (!start || !end) return 0;
-  const [sh, sm] = start.split(':').map(Number);
-  const [eh, em] = end.split(':').map(Number);
-  const startMinutes = sh * 60 + sm;
-  let endMinutes = eh * 60 + em;
-  if (endMinutes <= startMinutes) endMinutes += 24 * 60;
-  return endMinutes - startMinutes;
-}
-
 function DateTimeInput() {
   const navigate = useNavigate();
   const location = useLocation();
+  const queryClient = useQueryClient();
   const category = location.state?.category ?? 'social';
   const meta = CATEGORY_META[category];
 
@@ -67,19 +89,34 @@ function DateTimeInput() {
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [activeModal, setActiveModal] = useState(null);
+  const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isComplete = Boolean(title && date && startTime && endTime);
 
-  const handleNext = () => {
-    const durationMinutes = minutesOfDuration(startTime, endTime);
-    const projectedRefreshMinutes = Math.max(REFRESH_BASELINE_MINUTES - durationMinutes, 0);
+  // 추가 버튼 → 가능 여부 확인.
+  // AVAILABLE이면 곧바로 등록까지 진행하고, Refresh Time이 줄어들면 경고 화면으로 넘긴다.
+  const handleNext = async () => {
+    if (isSubmitting) return;
+    const payload = buildEventPayload({ category, title, date, startTime, endTime });
 
-    const scheduleState = { category, title, date, startTime, endTime, projectedRefreshMinutes };
+    setError('');
+    setIsSubmitting(true);
+    try {
+      const check = await checkEvent(payload);
 
-    if (projectedRefreshMinutes < REFRESH_MIN_RECOMMENDED_MINUTES) {
-      navigate('/schedule/warning', { state: scheduleState });
-    } else {
-      navigate('/schedule/complete', { state: scheduleState });
+      if (check.status === 'AVAILABLE') {
+        await createEvent(payload);
+        queryClient.invalidateQueries({ queryKey: ['home', 'today'] });
+        navigate('/schedule/complete', { state: { payload } });
+        return;
+      }
+
+      navigate('/schedule/warning', { state: { payload, check } });
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : '일정을 추가하지 못했어요. 다시 시도해 주세요.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -155,13 +192,15 @@ function DateTimeInput() {
           </button>
         </div>
 
+        {error && <p className="datetime-input-error">{error}</p>}
+
         <button
           type="button"
           className="btn btn-primary btn-full datetime-input-next"
-          disabled={!isComplete}
+          disabled={!isComplete || isSubmitting}
           onClick={handleNext}
         >
-          추가
+          {isSubmitting ? '확인 중...' : '추가'}
         </button>
       </div>
 

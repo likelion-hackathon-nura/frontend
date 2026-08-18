@@ -5,37 +5,79 @@ import './Recovery01.css'
 import CheckTip from '../../../assets/images/recovery_check_icon.svg'
 import TitleLine from '../../../assets/images/recovery_title_icon.svg'
 
-const Recovery01 = ({ onNext, matchedProduct }) => {
+const Recovery01 = ({ onNext, matchedProduct, stepData, nextStepData, }) => {
+
+    const ingredients = (() => {
+        const value = stepData?.recommended_ingredients
+
+        if (!value) {
+            return ['병풀추출물(CICA)', '판테놀', '알란토인']
+        }
+
+        if (Array.isArray(value)) return value
+
+        try {
+            const parsedIngredients = JSON.parse(value)
+
+            if (Array.isArray(parsedIngredients)) {
+                return parsedIngredients
+            }
+        } catch {
+            return value
+                .replace(/[[\]"]/g, '')
+                .split(/[,;|]/)
+                .map(ingredient => ingredient.trim())
+                .filter(Boolean)
+        }
+
+        return ['병풀추출물(CICA)', '판테놀', '알란토인']
+    })()
+
+    const precautions = Array.isArray(stepData?.precautions)
+        ? stepData.precautions
+        : stepData?.precautions
+            ? stepData.precautions
+                .split(/\n+|•/)
+                .map(precaution => precaution.trim())
+                .filter(Boolean)
+            : [
+                '피부가 많이 예민한 날에는 문지르기보다 가볍게 눌러 흡수시켜주세요.',
+                '세안 후 3분 이내에 사용하면 수분 손실을 줄이는 데 도움이 됩니다.',
+                '붉은기가 심한 부위는 얇게 한 번 더 레이어링해도 좋아요.',
+            ]
+
+
     return (
         <div className="recovery01_wrap">
 
             <div className="recovery01_progress">
                 <div className="recovery01_progress_step active">
                     <span>1</span>
-                    <p>진정</p>
+                    <p>{stepData?.care_type_kr || stepData?.title || '진정'}</p>
                 </div>
 
                 <div className="recovery01_progress_line" />
 
                 <div className="recovery01_progress_step">
                     <span>2</span>
-                    <p>보습</p>
+                    <p>{nextStepData?.care_type_kr || nextStepData?.title || '보습'}</p>
                 </div>
             </div>
 
             <div className="recovery01_top">
                 <div className="recovery01_title">
-                    <span>STEP 1</span>
-                    <p>먼저 피부 자극을 진정시켜볼게요.</p>
+                    <span>STEP {stepData?.step_order || 1}</span>
+                    <p>{stepData?.title || '먼저 피부 자극을 진정시켜볼게요.'}</p>
                 </div>
 
                 <p className="recovery01_content01">
-                    오늘 체크인에서 피부 당김과 붉은기가 함께 기록되었어요.<br />또한 피로도가 높아 피부 장벽이 일시적으로 약해졌을 가능성이 있어요.
+                    {stepData?.reason ||
+                        '오늘 체크인 결과를 바탕으로 진정 단계가 필요해요.'}
                 </p>
 
                 <p className="recovery01_content02">
-                    오늘은 피부에 자극을 최소화하면서<br />
-                    진정 중심의 케어를 먼저 진행하는 것을 추천드려요.
+                    {stepData?.description ||
+                        '피부에 자극을 최소화하면서 진정 중심의 케어를 진행해주세요.'}
                 </p>
             </div>
 
@@ -47,12 +89,15 @@ const Recovery01 = ({ onNext, matchedProduct }) => {
                         <p>추천 성분</p>
                     </div>
                     <p className="recovery01_section_description">
-                        자극을 완화하고 피부를 편안하게 진정시키는 데 도움이 되는 성분이에요.
+                        {stepData?.recommended_ingredient_description ||
+                            '자극을 완화하고 피부를 편안하게 진정시키는 데 도움이 되는 성분이에요.'}
                     </p>
                     <div className="recovery01_tags">
-                        <span>병풀추출물(CICA)</span>
-                        <span>판테놀</span>
-                        <span>알란토인</span>
+                        {ingredients.map((ingredient, index) => (
+                            <span key={`${ingredient}-${index}`}>
+                                {ingredient}
+                            </span>
+                        ))}
                     </div>
                 </section>
 
@@ -80,15 +125,19 @@ const Recovery01 = ({ onNext, matchedProduct }) => {
                             <div className="recovery01_product_content">
                                 <p>{matchedProduct.name}</p>
 
-                                <div className='recovery_product_box'>
-                                    <img src={CheckTip} alt="" />
-                                    <span>{matchedProduct.description}</span>
-                                </div>
+                                {matchedProduct.description && (
+                                    <div className="recovery_product_box">
+                                        <img src={CheckTip} alt="" />
+                                        <span>{matchedProduct.description}</span>
+                                    </div>
+                                )}
 
-                                <div >
-                                    <img src={CheckTip} alt="" />
-                                    <span>{matchedProduct.ingredients}</span>
-                                </div>
+                                {matchedProduct.ingredients && (
+                                    <div>
+                                        <img src={CheckTip} alt="" />
+                                        <span>{matchedProduct.ingredients}</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}
@@ -101,29 +150,12 @@ const Recovery01 = ({ onNext, matchedProduct }) => {
                     </div>
 
                     <div className="recovery01_caution">
-                        <div>
-                            <img src={CheckTip} alt="" />
-                            <p>
-                                피부가 많이 예민한 날에는 문지르기보다<br />
-                                가볍게 눌러 흡수시켜주세요.
-                            </p>
-                        </div>
-
-                        <div>
-                            <img src={CheckTip} alt="" />
-                            <p>
-                                세안 후 3분 이내에 사용하면 수분 손실을 줄이는 데<br />
-                                도움이 됩니다.
-                            </p>
-                        </div>
-
-                        <div>
-                            <img src={CheckTip} alt="" />
-                            <p>
-                                붉은기가 심한 부위는 얇게 한 번 더 레이어링해도 좋아요.
-                            </p>
-                        </div>
-
+                        {precautions.map((precaution, index) => (
+                            <div key={`${precaution}-${index}`}>
+                                <img src={CheckTip} alt="" />
+                                <p>{precaution}</p>
+                            </div>
+                        ))}
                     </div>
                 </section>
             </div>

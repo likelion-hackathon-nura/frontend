@@ -1,7 +1,11 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import './EditInitialSettings.css'
+import {
+    getMyPreferences,
+    updateMyPreferences,
+} from '../../../api/mypage'
 
 import PrevBtn from '../../../assets/images/prev_btn.svg'
 import { ReactComponent as RegularIcon } from '../../../assets/images/regular.svg'
@@ -13,19 +17,19 @@ const SLEEP_MAX = 10
 
 const mealPatterns = [
     {
-        id: 'regular',
+        id: 'REGULAR',
         Icon: RegularIcon,
         title: '규칙적으로 식사해요.',
         description: '거의 매일 3끼를 챙겨 먹어요.',
     },
     {
-        id: 'sometimes',
+        id: 'SOMETIMES_SKIP',
         Icon: SometimesSkipIcon,
         title: '가끔 거르기도 해요.',
         description: '바쁘면 한 끼를 거르기도 해요.',
     },
     {
-        id: 'often',
+        id: 'OFTEN_SKIP',
         Icon: OftenSkipIcon,
         title: '자주 거르는 편이에요',
         description: '불규칙하거나 거르는 날이 많아요.',
@@ -34,49 +38,49 @@ const mealPatterns = [
 
 const activities = [
     {
-        id: 'napSleep',
+        id: 'NAP_SLEEP',
         icon: '💤',
         label: '낮잠/수면',
         iconBackground: '#C2D4FF'
     },
     {
-        id: 'bath',
+        id: 'BATH',
         icon: '🛀🏻',
         label: '목욕/반신욕',
         iconBackground: '#FFEAD9'
     },
     {
-        id: 'readingStudy',
+        id: 'READING_STUDY',
         icon: '📕',
         label: '독서/공부',
         iconBackground: '#FFD9DD'
     },
     {
-        id: 'exerciseStretching',
+        id: 'EXERCISE_STRETCH',
         icon: '🏀',
         label: '운동/스트레칭',
         iconBackground: '#FFBEA7'
     },
     {
-        id: 'petCare',
+        id: 'PET_CARE',
         icon: '🐶',
         label: '반려동물 케어',
         iconBackground: '#D3C9F0'
     },
     {
-        id: 'walkCafe',
+        id: 'WALK_CAFE',
         icon: '🚶🏻‍♀️',
         label: '산책/카페',
         iconBackground: '#D9FFDB'
     },
     {
-        id: 'meditationYoga',
+        id: 'MEDITATION',
         icon: '🧘🏻‍♀️',
         label: '명상/요가',
         iconBackground: '#FFF5D9'
     },
     {
-        id: 'other',
+        id: 'OTHER',
         icon: '•••',
         label: '기타',
         iconBackground: '#D8D8E6'
@@ -85,36 +89,41 @@ const activities = [
 
 const sensitivities = [
     {
-        id: 'level1',
+        id: 'LOW',
         icon: '🌱',
         title: '1단계',
         description: '기본 관리만 해도 괜찮아요.',
     },
     {
-        id: 'level2',
+        id: 'MEDIUM',
         icon: '🪴',
         title: '2단계',
         description: '적당히 신경 쓰며 관리하고 싶어요.',
     },
     {
-        id: 'level3',
+        id: 'HIGH',
         icon: '🌲',
         title: '3단계',
         description: '최대한 꼼꼼하게 관리하고 싶어요.',
     },
 ]
 
-const skinTypes = ['건성', '지성', '복합성', '민감성']
+const skinTypes = [
+    { id: 'DRY', label: '건성' },
+    { id: 'OILY', label: '지성' },
+    { id: 'COMBINATION', label: '복합성' },
+    { id: 'SENSITIVE', label: '민감성' },
+]
 
 const skinConcerns = [
-    '건조함',
-    '붉은기',
-    '트러블',
-    '피부장벽',
-    '각질/거칠음',
-    '피지/유분기',
-    '주름',
-    '기타',
+    { id: 'DRYNESS', label: '건조함' },
+    { id: 'REDNESS', label: '붉은기' },
+    { id: 'TROUBLE', label: '트러블' },
+    { id: 'SKIN_BARRIER', label: '피부장벽' },
+    { id: 'ROUGHNESS', label: '각질/거칠음' },
+    { id: 'OILINESS', label: '피지/유분기' },
+    { id: 'WRINKLE', label: '주름' },
+    { id: 'OTHER', label: '기타' },
 ]
 
 const EditInitialSettings = () => {
@@ -126,6 +135,32 @@ const EditInitialSettings = () => {
     const [sensitivity, setSensitivity] = useState('')
     const [skinType, setSkinType] = useState('')
     const [selectedConcerns, setSelectedConcerns] = useState([])
+    const [isLoading, setIsLoading] = useState(true)
+    const [isSubmitting, setIsSubmitting] = useState(false)
+
+    useEffect(() => {
+        const loadPreferences = async () => {
+            try {
+                const data = await getMyPreferences()
+
+                setSleepTime(data.targetSleepMinutes / 60)
+                setMealPattern(data.mealPattern)
+                setSelectedActivities(data.restActivities)
+                setSensitivity(data.sensitivityLevel)
+                setSkinType(data.skinType)
+                setSelectedConcerns(data.skinConcerns)
+            } catch (error) {
+                alert(
+                    error.message ||
+                    '초기 설정을 불러오지 못했습니다.'
+                )
+            } finally {
+                setIsLoading(false)
+            }
+        }
+
+        loadPreferences()
+    }, [])
 
     const sleepProgress =
         ((sleepTime - SLEEP_MIN) / (SLEEP_MAX - SLEEP_MIN)) * 100
@@ -162,9 +197,48 @@ const EditInitialSettings = () => {
         }
     }
 
-    const handleSubmit = () => {
-        // TODO: 초기 설정 수정 API 연동
-        navigate('/mypage')
+    const handleSubmit = async () => {
+        if (
+            !mealPattern ||
+            selectedActivities.length === 0 ||
+            !sensitivity ||
+            !skinType ||
+            selectedConcerns.length === 0
+        ) {
+            alert('모든 초기 설정을 선택해주세요.')
+            return
+        }
+
+        setIsSubmitting(true)
+
+        try {
+            await updateMyPreferences({
+                targetSleepMinutes: sleepTime * 60,
+                mealPattern,
+                restActivities: selectedActivities,
+                sensitivityLevel: sensitivity,
+                skinType,
+                skinConcerns: selectedConcerns,
+            })
+
+            alert('초기 설정이 수정되었습니다.')
+            navigate('/mypage')
+        } catch (error) {
+            alert(
+                error.message ||
+                '초기 설정 수정에 실패했습니다.'
+            )
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
+
+    if (isLoading) {
+        return (
+            <div className="initialsettings_wrap">
+                <p>불러오는 중...</p>
+            </div>
+        )
     }
 
     return (
@@ -361,18 +435,18 @@ const EditInitialSettings = () => {
                         {skinTypes.map((type) => (
                             <button
                                 type="button"
-                                key={type}
+                                key={type.id}
                                 className={
-                                    skinType === type
+                                    skinType === type.id
                                         ? 'initialsettings_choice active'
                                         : 'initialsettings_choice'
                                 }
-                                onClick={() => setSkinType(type)}
+                                onClick={() => setSkinType(type.id)}
                             >
-                                {type}
+                                {type.label}
 
                                 <span>
-                                    {skinType === type && '✓'}
+                                    {skinType === type.id && '✓'}
                                 </span>
                             </button>
                         ))}
@@ -389,22 +463,20 @@ const EditInitialSettings = () => {
                         {skinConcerns.map((concern) => (
                             <button
                                 type="button"
-                                key={concern}
+                                key={concern.id}
                                 className={
-                                    selectedConcerns.includes(concern)
+                                    selectedConcerns.includes(concern.id)
                                         ? 'initialsettings_choice active'
                                         : 'initialsettings_choice'
                                 }
                                 onClick={() =>
-                                    toggleConcern(concern)
+                                    toggleConcern(concern.id)
                                 }
                             >
-                                {concern}
+                                {concern.label}
 
                                 <span>
-                                    {selectedConcerns.includes(
-                                        concern
-                                    ) && '✓'}
+                                    {selectedConcerns.includes(concern.id) && '✓'}
                                 </span>
                             </button>
                         ))}
@@ -415,8 +487,9 @@ const EditInitialSettings = () => {
                         type="button"
                         className="initialsettings_submit"
                         onClick={handleSubmit}
+                        disabled={isSubmitting}
                     >
-                        완료
+                        {isSubmitting ? '저장 중...' : '완료'}
                     </button>
                 </div>
             </div>

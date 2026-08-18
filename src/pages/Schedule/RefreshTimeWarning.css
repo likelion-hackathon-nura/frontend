@@ -100,6 +100,14 @@
   color: var(--color-text-secondary);
 }
 
+.refresh-warning-error {
+  margin-top: 12px;
+
+  font-size: 13px;
+  font-weight: var(--font-medium);
+  color: #D27373;
+}
+
 .refresh-warning-actions {
   margin-top: 149px;
   display: flex;

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { createCheckin } from '../../api/skin'
 
 import './CheckIn.css'
 
@@ -8,12 +9,68 @@ import CheckIn02 from './CheckInSteps/CheckIn02'
 import CheckIn03 from './CheckInSteps/CheckIn03'
 import CheckIn04 from './CheckInSteps/CheckIn04'
 import CheckIn05 from './CheckInSteps/CheckIn05'
-
 import PrevBtn from '../../assets/images/prev_btn.svg'
+
+const getTodayDate = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0]
 
 const CheckIn = () => {
     const navigate = useNavigate()
     const [step, setStep] = useState(0)
+
+    const [checkinData, setCheckinData] = useState({
+        fatigue: null,
+        tightness: null,
+        redness: null,
+        photo: null,
+    })
+
+    const [analysisComplete, setAnalysisComplete] = useState(false)
+
+    const handleFatigueChange = value => {
+        setCheckinData(prev => ({
+            ...prev,
+            fatigue: value,
+        }))
+    }
+
+    const handleSkinConditionChange = (name, value) => {
+        setCheckinData(prev => ({
+            ...prev,
+            [name]: value,
+        }))
+    }
+
+    const handlePhotoChange = file => setCheckinData(prev => ({ ...prev, photo: file }))
+
+    const handleSubmit = async (photo = checkinData.photo) => {
+        const submitData = { ...checkinData, photo }
+
+        setCheckinData(submitData)
+        setAnalysisComplete(false)
+        setStep(4)
+
+        try {
+            await createCheckin({ date: getTodayDate(), ...submitData })
+            setAnalysisComplete(true)
+        } catch (error) {
+            console.error('체크인 실패:', error)
+
+            const errorMessage =
+                error.message || '체크인 중 오류가 발생했습니다.'
+
+            alert(errorMessage)
+
+            if (errorMessage.includes('이미 존재합니다')) {
+                navigate('/skin', { replace: true })
+                return
+            }
+
+            setStep(3)
+        }
+    }
+
+    const handleStartRecovery = () => navigate('/recovery')
+    const handleExit = () => navigate('/skin')
 
     const handleNext = () => {
         setStep(prev => Math.min(prev + 1, 5))
@@ -58,11 +115,24 @@ const CheckIn = () => {
                 </>
             )}
 
-            {step === 1 && <CheckIn01 onNext={handleNext} />}
-            {step === 2 && <CheckIn02 onNext={handleNext} />}
-            {step === 3 && <CheckIn03 onNext={handleNext} />}
-            {step === 4 && <CheckIn04 onNext={handleNext} />}
-            {step === 5 && <CheckIn05 />}
+            {step === 1 && (
+                <CheckIn01
+                    fatigue={checkinData.fatigue}
+                    onChange={handleFatigueChange}
+                    onNext={handleNext}
+                />
+            )}
+            {step === 2 && (
+                <CheckIn02
+                    tightness={checkinData.tightness}
+                    redness={checkinData.redness}
+                    onChange={handleSkinConditionChange}
+                    onNext={handleNext}
+                />
+            )}
+            {step === 3 && <CheckIn03 photo={checkinData.photo} onPhotoChange={handlePhotoChange} onNext={handleSubmit} />}
+            {step === 4 && <CheckIn04 isComplete={analysisComplete} onNext={handleNext} />}
+            {step === 5 && <CheckIn05 onRecovery={handleStartRecovery} onExit={handleExit} />}
         </div>
     )
 }

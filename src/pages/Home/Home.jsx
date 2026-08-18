@@ -92,6 +92,16 @@ function formatClock(date) {
   return `${h}:${m}:${s}`;
 }
 
+// 현재 시각대에 맞는 인사말
+function getGreeting(date) {
+  const hour = date.getHours();
+  if (hour < 6) return '좋은 새벽이에요 🌙';
+  if (hour < 12) return '좋은 아침이에요 🌞';
+  if (hour < 18) return '좋은 오후예요 ☀️';
+  if (hour < 22) return '좋은 저녁이에요 🌇';
+  return '좋은 밤이에요 🌙';
+}
+
 const TIME_ENTRY_META = [
   { key: 'social', label: 'Social Time', Icon: SocialIcon, iconClass: 'social-time-icon' },
   { key: 'refresh', label: 'Refresh Time', Icon: RefreshIcon, iconClass: 'refresh-time-icon' },
@@ -137,7 +147,8 @@ function groupBlocksByCategory(blocks) {
   (blocks || []).forEach((block) => {
     const key = BLOCK_CATEGORY_TO_KEY[block.category];
     if (!key) return;
-    grouped[key].push({ time: `${formatTime(block.startAt)} ~ ${formatTime(block.endAt)}`, tag: block.label || '' });
+    // 자동 생성된 MY 블록은 label이 null로 내려오므로 태그를 렌더링하지 않는다.
+    grouped[key].push({ time: `${formatTime(block.startAt)} ~ ${formatTime(block.endAt)}`, tag: block.label || null });
   });
   return grouped;
 }
@@ -345,7 +356,9 @@ function Home() {
 
   return (
     <div className="page home-page">
-      <p className="home-greeting">{homeData?.nickname ? `${homeData.nickname}님, 좋은 아침이에요 🌞` : '좋은 아침이에요 🌞'}</p>
+      <p className="home-greeting">
+        {homeData?.nickname ? `${homeData.nickname}님, ${getGreeting(now)}` : getGreeting(now)}
+      </p>
       <div className="home-today">
         <h1>{homeData?.shiftType ? `오늘은 ${SHIFT_GREETING_LABELS[homeData.shiftType]}예요` : '오늘의 근무표가 없어요'}</h1>
         {(() => {
@@ -510,10 +523,13 @@ function Home() {
                   <stat.Icon className={stat.iconClass} />
                   <p className={`home-stat-label-${stat.key}`}>{stat.label}</p>
                   <div className="home-stat-entries">
+                    {groupedEntries[stat.key].length === 0 && (
+                      <p className="home-stat-empty">아직 설정된 일정이 없어요</p>
+                    )}
                     {groupedEntries[stat.key].map((entry, i) => (
                       <div key={i} className="home-stat-entry">
                         <span className="home-stat-time">{entry.time}</span>
-                        <span className={`home-stat-tag home-stat-tag-${stat.key}`}>{entry.tag}</span>
+                        {entry.tag && <span className={`home-stat-tag home-stat-tag-${stat.key}`}>{entry.tag}</span>}
                       </div>
                     ))}
                   </div>
