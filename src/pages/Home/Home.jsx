@@ -11,8 +11,6 @@ import { ReactComponent as OffTopIcon } from '../../assets/images/off-today.svg'
 import { ReactComponent as SocialIcon } from '../../assets/images/social-time.svg';
 import { ReactComponent as RefreshIcon } from '../../assets/images/refresh-time.svg';
 import { ReactComponent as MytimeIcon } from '../../assets/images/my-time.svg';
-import { ReactComponent as AlarmIcon } from '../../assets/images/alarm.svg';
-import { ReactComponent as AlarmPushIcon } from '../../assets/images/alarm-push.svg';
 import { ReactComponent as HomeDayIcon } from '../../assets/images/home_day.svg';
 import { ReactComponent as HomeEveningIcon } from '../../assets/images/home_evening.svg';
 import { ReactComponent as HomeNightIcon } from '../../assets/images/home_night.svg';
@@ -269,7 +267,6 @@ function myTimeRingArcPath(startAngle, endAngle, r = MYTIME_RING_R) {
 function Home() {
   const navigate = useNavigate();
   const [aiOpen, setAiOpen] = useState(false);
-  const [hasAlarm, setHasAlarm] = useState(true);
   const [page, setPage] = useState(0);
   const [now, setNow] = useState(new Date());
   const touchStartX = useRef(null);
@@ -348,15 +345,6 @@ function Home() {
 
   return (
     <div className="page home-page">
-      <button
-        type="button"
-        className="home-alarm-btn"
-        onClick={() => setHasAlarm(false)}
-        aria-label="알림"
-      >
-        {hasAlarm ? <AlarmPushIcon /> : <AlarmIcon />}
-      </button>
-
       <p className="home-greeting">{homeData?.nickname ? `${homeData.nickname}님, 좋은 아침이에요 🌞` : '좋은 아침이에요 🌞'}</p>
       <div className="home-today">
         <h1>{homeData?.shiftType ? `오늘은 ${SHIFT_GREETING_LABELS[homeData.shiftType]}예요` : '오늘의 근무표가 없어요'}</h1>

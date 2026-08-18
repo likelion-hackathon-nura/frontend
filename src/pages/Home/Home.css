@@ -6,17 +6,6 @@
   padding: 24px 22px 110px;
 }
 
-.home-alarm-btn {
-  position: absolute;
-  left: 355px;
-  top: 62px;
-  padding: 0;
-
-  border: 0;
-  background: none;
-  cursor: pointer;
-}
-
 .home-greeting {
   left: 22px;
   top: 56px;
