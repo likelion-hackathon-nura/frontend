@@ -88,7 +88,16 @@ function CategorySelect() {
                 <span className="category-card-label">{cat.label}</span>
                 <span className="category-card-desc">{cat.description}</span>
               </span>
-              <span className="category-card-arrow">
+              {/* 화살표는 선택을 건너뛰고 곧바로 다음 화면으로 이동한다. */}
+              <span
+                className="category-card-arrow"
+                role="button"
+                aria-label={`${cat.label} 선택하고 다음으로`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  goToDateTime(cat.key);
+                }}
+              >
                 <ArrowIcon />
               </span>
             </button>

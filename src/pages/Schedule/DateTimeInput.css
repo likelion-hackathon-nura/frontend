@@ -172,6 +172,14 @@
   color: #C9C2C4;
 }
 
+.datetime-input-error {
+  margin-top: 12px;
+
+  font-size: 13px;
+  font-weight: var(--font-medium);
+  color: #D27373;
+}
+
 .datetime-input-next,
 .datetime-input-next:disabled {
   margin-top: 134px;

@@ -1,11 +1,25 @@
+import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { ReactComponent as BackIcon } from '../../assets/images/backbutton.svg';
+import { createEvent } from '../../api/event';
+import { ApiError } from '../../api/client';
 import './RefreshTimeWarning.css';
 
-const REFRESH_BASELINE_MINUTES = 270; // 4시간 30분
-const REFRESH_MIN_RECOMMENDED_MINUTES = 240; // 4시간
-const CHART_MAX_MINUTES = 300; // 5시간, chart y축 상한
-const CHART_MIN_MINUTES = 60; // 1시간, chart y축 하한 (막대 바닥 = "1" 그리드라인)
+// y축은 실제 값에 맞춰 4시간 폭으로 잡는다. 그리드라인은 위/중간/아래 3개이고
+// 막대 바닥이 가장 아래 그리드라인에 닿는다. (예: 9시간 → 9/7/5, 4시간 30분 → 5/3/1)
+const CHART_SPAN_HOURS = 4;
+
+function getChartAxis(before, after) {
+  const topHours = Math.max(Math.ceil(Math.max(before, after) / 60), 1);
+  const bottomHours = Math.max(topHours - CHART_SPAN_HOURS, 0);
+  const midHours = (topHours + bottomHours) / 2;
+  return {
+    maxMinutes: topHours * 60,
+    minMinutes: bottomHours * 60,
+    gridValues: [topHours, midHours, bottomHours],
+  };
+}
 
 function formatDuration(totalMinutes) {
   const hours = Math.floor(totalMinutes / 60);
@@ -31,11 +45,13 @@ function WarningIcon() {
 function RefreshTimeChart({ before, after }) {
   const chartHeight = 127;
   const barWidth = 46;
-  const chartRangeMinutes = CHART_MAX_MINUTES - CHART_MIN_MINUTES;
-  const minutesToHeight = (minutes) => Math.max((minutes - CHART_MIN_MINUTES) / chartRangeMinutes, 0) * chartHeight;
+  const { maxMinutes, minMinutes, gridValues } = getChartAxis(before, after);
+  const chartRangeMinutes = maxMinutes - minMinutes;
+  const minutesToHeight = (minutes) =>
+    Math.min(Math.max((minutes - minMinutes) / chartRangeMinutes, 0), 1) * chartHeight;
   const beforeHeight = minutesToHeight(before);
   const afterHeight = minutesToHeight(after);
-  const gridValues = [5, 3, 1];
+  const bottomGridValue = gridValues[gridValues.length - 1];
 
   const beforeX = 81.3;
   const afterX = 182;
@@ -52,8 +68,8 @@ function RefreshTimeChart({ before, after }) {
 
       <g transform={`translate(0, ${topOffset})`}>
       {gridValues.map((v) => {
-        // "1" 그리드라인만 막대 바닥에서 8px(렌더 기준) 아래로 살짝 띄움
-        const y = v === 1 ? chartHeight + 6.92 : chartHeight - minutesToHeight(v * 60);
+        // 가장 아래 그리드라인만 막대 바닥에서 8px(렌더 기준) 아래로 살짝 띄움
+        const y = v === bottomGridValue ? chartHeight + 6.92 : chartHeight - minutesToHeight(v * 60);
         return (
           <g key={v}>
             <line x1="24" y1={y} x2="275.9" y2={y} stroke="#E5DEDF" strokeWidth="1" strokeDasharray="3 3" />
@@ -126,17 +142,35 @@ function RefreshTimeChart({ before, after }) {
 function RefreshTimeWarning() {
   const navigate = useNavigate();
   const location = useLocation();
-  const scheduleState = location.state ?? {};
-  const projectedRefreshMinutes = scheduleState.projectedRefreshMinutes ?? REFRESH_BASELINE_MINUTES;
-  const decreasedMinutes = Math.max(REFRESH_BASELINE_MINUTES - projectedRefreshMinutes, 0);
-  const isBelowMinimum = projectedRefreshMinutes < REFRESH_MIN_RECOMMENDED_MINUTES;
+  const queryClient = useQueryClient();
+  const { payload, check = {} } = location.state ?? {};
 
-  const handleRegisterAsIs = () => {
-    navigate('/schedule/complete', { state: scheduleState });
+  const currentRefreshMinutes = check.currentRefreshMinutes ?? 0;
+  const expectedRefreshMinutes = check.expectedRefreshMinutes ?? 0;
+  const decreasedMinutes = check.refreshDecreaseMinutes ?? 0;
+  const minimumRecommendedMinutes = check.minimumRecommendedRefreshMinutes ?? 0;
+  const isBelowMinimum = Boolean(check.belowMinimumRecommended);
+
+  const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleRegisterAsIs = async () => {
+    if (isSubmitting) return;
+    setError('');
+    setIsSubmitting(true);
+    try {
+      await createEvent(payload);
+      queryClient.invalidateQueries({ queryKey: ['home', 'today'] });
+      navigate('/schedule/complete', { state: { payload } });
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : '일정을 등록하지 못했어요. 다시 시도해 주세요.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleViewRecommendation = () => {
-    navigate('/schedule/recommend', { state: scheduleState });
+    navigate('/schedule/recommend', { state: { payload } });
   };
 
   return (
@@ -157,14 +191,14 @@ function RefreshTimeWarning() {
 
       <div className="refresh-warning-section">
         <div className="refresh-warning-chart-wrap">
-          <RefreshTimeChart before={REFRESH_BASELINE_MINUTES} after={projectedRefreshMinutes} />
+          <RefreshTimeChart before={currentRefreshMinutes} after={expectedRefreshMinutes} />
         </div>
 
         {isBelowMinimum && (
           <div className="refresh-warning-box">
             <WarningIcon />
             <p>
-              최소 권장 Refresh Time(4시간)을
+              최소 권장 Refresh Time({formatDuration(minimumRecommendedMinutes)})을
               <br />
               충족하지 못하고 있어요.
               <br />
@@ -173,9 +207,16 @@ function RefreshTimeWarning() {
           </div>
         )}
 
+        {error && <p className="refresh-warning-error">{error}</p>}
+
         <div className="refresh-warning-actions">
-          <button type="button" className="btn btn-secondary refresh-warning-btn" onClick={handleRegisterAsIs}>
-            그대로 등록
+          <button
+            type="button"
+            className="btn btn-secondary refresh-warning-btn"
+            onClick={handleRegisterAsIs}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? '등록 중...' : '그대로 등록'}
           </button>
           <button type="button" className="btn btn-primary refresh-warning-btn" onClick={handleViewRecommendation}>
             대체 일정 보기

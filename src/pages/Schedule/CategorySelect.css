@@ -156,6 +156,11 @@
   border-color: #DCDAFF;
 }
 
+.category-card-social.is-selected {
+  border-color: #8F6FE3;
+  background-color: #F4F1FF;
+}
+
 .category-card-social .category-card-arrow {
   background-color: #8F6FE3;
 }
@@ -164,12 +169,22 @@
   border-color: #FFC7C7;
 }
 
+.category-card-refresh.is-selected {
+  border-color: #F18E8E;
+  background-color: #FFEDED;
+}
+
 .category-card-refresh .category-card-arrow {
   background-color: #FFC1C1;
 }
 
 .category-card-mytime {
   border-color: #FFEAC1;
+}
+
+.category-card-mytime.is-selected {
+  border-color: #E7CA94;
+  background-color: #FFFCE1;
 }
 
 .category-card-mytime .category-card-arrow {
