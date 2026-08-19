@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import './Mypage.css'
 import {
     deleteUserAccount,
+    getMyInfo,
     logoutUser,
 } from '../../api/mypage'
 import { clearTokens } from '../../api/tokenStorage'
@@ -17,6 +18,23 @@ const Mypage = () => {
     const navigate = useNavigate()
     const [isLoggingOut, setIsLoggingOut] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
+    const [nickname, setNickname] = useState('')
+
+    useEffect(() => {
+        const loadMyInfo = async () => {
+            try {
+                const data = await getMyInfo()
+                setNickname(data.nickname || '')
+            } catch (error) {
+                alert(
+                    error.message ||
+                    '내 정보를 불러오지 못했습니다.'
+                )
+            }
+        }
+
+        loadMyInfo()
+    }, [])
 
     const handleLogout = async () => {
         if (isLoggingOut) {
@@ -82,7 +100,7 @@ const Mypage = () => {
         <div className="mypage_wrap">
             <div className="mypage_top">
                 <img src={ProfileIcon} alt="" />
-                <p>수정</p>
+                <p>{nickname}</p>
                 <span onClick={() => navigate('/mypage/edit-profile')}>내 정보 수정</span>
             </div>
 

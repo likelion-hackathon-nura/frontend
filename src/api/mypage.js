@@ -1,5 +1,24 @@
 import { apiRequest } from './client';
 
+export function getMyInfo() {
+    return apiRequest('/api/me');
+}
+
+export function updateMyInfo({
+    nickname,
+    newPassword,
+    newPasswordConfirm,
+}) {
+    return apiRequest('/api/me', {
+        method: 'PATCH',
+        body: {
+            nickname,
+            newPassword,
+            newPasswordConfirm,
+        },
+    });
+}
+
 export function getMyPreferences() {
     return apiRequest('/api/me/preferences');
 }
