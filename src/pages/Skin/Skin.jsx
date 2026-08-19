@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import BottomNav from '../../components/BottomNav/BottomNav'
-import { getCheckinStatus, getTodaySkin } from '../../api/skin'
+import { getTodaySkin } from '../../api/skin'
 
 import '../Skin/Skin.css'
 
@@ -28,9 +28,33 @@ import SkinTime from '../../assets/images/skin_time.svg'
 import SkinLock from '../../assets/images/skin_lock_icon.svg'
 
 
-const getTodayDate = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0]
 const DAY_LABELS = { MON: '월', TUE: '화', WED: '수', THU: '목', FRI: '금', SAT: '토', SUN: '일' }
 const PRODUCT_IMAGES = [Product01, Product02, Product03, Product04]
+const LEVEL_LABELS = {
+    1: '낮음',
+    2: '보통',
+    3: '높음',
+    4: '매우 높음',
+    VERY_LOW: '낮음',
+    LOW: '낮음',
+    MODERATE: '보통',
+    MEDIUM: '보통',
+    HIGH: '높음',
+    UNKNOWN: '분석 전',
+}
+
+const getLevelLabel = (...values) => {
+    const value = values.find(item =>
+        item !== undefined && item !== null && item !== 'UNKNOWN'
+    ) ?? values.find(item =>
+        item !== undefined && item !== null
+    )
+
+    return LEVEL_LABELS[value] || '-'
+}
+
+const getAnalysisLevelIcon = level =>
+    level === 'HIGH' ? Analysis02 : Analysis03
 
 const Skin = () => {
 
@@ -44,31 +68,31 @@ const Skin = () => {
 
     const [streakDays, setStreakDays] = useState(0)
 
-    useEffect(() => {
-        const loadCheckinStatus = async () => {
-            try {
-                const data = await getCheckinStatus(getTodayDate())
-                setIsCheckedIn(!data.can_checkin)
-            } catch (error) {
-                console.error('체크인 상태 조회 실패:', error)
-            }
-        }
+    const [checkinSummary, setCheckinSummary] = useState(null)
+    const [routineSummary, setRoutineSummary] = useState(null)
+    const [isRoutineCompleted, setIsRoutineCompleted] = useState(false)
 
-        loadCheckinStatus()
-    }, [])
 
     useEffect(() => {
         const loadTodaySkin = async () => {
             try {
                 const data = await getTodaySkin()
-                setStreakDays(data.streakDays)
+                const routine = data.routineSummary
+                const totalSteps = routine?.totalSteps ?? routine?.steps?.length ?? 0
+                const routineCompleted = Boolean(data.routineCompleted || routine?.completed)
+
+                setIsCheckedIn(Boolean(data.checkedIn))
+                setStreakDays(data.streakDays ?? 0)
                 setWeekData(
-                    data.weeklyRecords.map(item => ({
+                    (data.weeklyRecords ?? []).map(item => ({
                         day: DAY_LABELS[item.dayOfWeek],
-                        status: item.status.toLowerCase(),
+                        status: item.status?.toLowerCase() || 'none',
                     }))
                 )
-                setCurrentStep(data.routineSummary?.completed ? 3 : 2)
+                setCheckinSummary(data.checkinSummary ?? null)
+                setRoutineSummary(routine ?? null)
+                setIsRoutineCompleted(routineCompleted)
+                setCurrentStep(routineCompleted ? totalSteps + 1 : Math.max(totalSteps, 1))
             } catch (error) {
                 console.error('오늘의 피부 상태 조회 실패:', error)
             }
@@ -109,7 +133,23 @@ const Skin = () => {
     // 1: 진정 케어, 2: 보습 케어, 3: 완료
     const [currentStep, setCurrentStep] = useState(2)
 
-    const recoverySteps = ['진정 케어', '보습 케어', '완료']
+    const routineSteps = routineSummary?.steps ?? []
+
+    const recoverySteps = routineSteps.length
+        ? [
+            ...routineSteps.map(item =>
+                item.careTypeKr || item.careType
+            ),
+            '완료',
+        ]
+        : ['진정 케어', '보습 케어', '완료']
+
+
+    const routineProducts = routineSteps.filter(
+        item => item.hasCosmetic || item.cosmeticName
+    )
+
+    const analysisDetails = checkinSummary?.analysisDetails ?? []
 
     return (
         <div className="page skin_wrap">
@@ -181,27 +221,33 @@ const Skin = () => {
                                         <div className="skin_a_status_box">
                                             <p>피로도</p>
                                             <img src={Status01} alt="" />
-                                            <p>4/5</p>
+                                            <p>{checkinSummary?.fatigue ?? '-'}/5</p>
                                         </div>
                                         <div className="skin_a_status_box">
                                             <p>피부 당김</p>
                                             <img src={Status02} alt="" />
-                                            <p>높음</p>
+                                            <p>{getLevelLabel(checkinSummary?.tightness)}</p>
                                         </div>
                                         <div className="skin_a_status_box">
                                             <p>붉은기/트러블</p>
                                             <img src={Status03} alt="" />
-                                            <p>보통</p>
+                                            <p>
+                                                {getLevelLabel(
+                                                    checkinSummary?.analyzedRedness,
+                                                    checkinSummary?.analyzedTrouble,
+                                                    checkinSummary?.redness,
+                                                )}
+                                            </p>
                                         </div>
                                         <div className="skin_a_status_box">
                                             <p>수분도</p>
                                             <img src={Status04} alt="" />
-                                            <p>낮음</p>
+                                            <p>{getLevelLabel(checkinSummary?.analyzedMoisture)}</p>
                                         </div>
                                         <div className="skin_a_status_box">
                                             <p>유분기</p>
                                             <img src={Status05} alt="" />
-                                            <p>보통</p>
+                                            <p>{getLevelLabel(checkinSummary?.analyzedOiliness)}</p>
                                         </div>
                                     </div>
 
@@ -212,38 +258,41 @@ const Skin = () => {
                                             <span>조명과 각도에 따라 차이가 있을 수 있어요.</span>
                                         </div>
 
-                                        <div className="skin_analysis_p_txt">
+                                        <div className="skin_analysis_photo_content">
+                                            {checkinSummary?.photoUrl && (
+                                                <img
+                                                    src={checkinSummary.photoUrl}
+                                                    alt="오늘의 피부 사진"
+                                                    className="skin_analysis_image"
+                                                />
+                                            )}
 
-                                            <div className="skin_a_p_t_box">
-                                                <div className="skin_a_p_t_title">
-                                                    <img src={Analysis01} alt="" />
-                                                    <p>붉은기</p>
-                                                    <img src={Analysis02} alt="" />
-                                                </div>
-                                                <div className="skin_a_p_t_content">
-                                                    <p>볼 부위에 일시적인 붉은기가 감지되었어요.<br /><span>마스크나 외부 자극의 영향일 수 있어요.</span></p>
-                                                </div>
-                                            </div>
+                                            <div className="skin_analysis_p_txt">
+                                                {analysisDetails.length > 0 ? (
+                                                    analysisDetails.map((detail, index) => (
+                                                        <div
+                                                            className="skin_a_p_t_box"
+                                                            key={`${detail.title}-${index}`}
+                                                        >
+                                                            <div className="skin_a_p_t_title">
+                                                                <img src={Analysis01} alt="" />
+                                                                <p>{detail.title}</p>
+                                                                <img
+                                                                    src={getAnalysisLevelIcon(detail.level)}
+                                                                    alt=""
+                                                                />
+                                                            </div>
 
-                                            <div className="skin_a_p_t_box">
-                                                <div className="skin_a_p_t_title">
-                                                    <img src={Analysis01} alt="" />
-                                                    <p>수분 부족</p>
-                                                    <img src={Analysis02} alt="" />
-                                                </div>
-                                                <div className="skin_a_p_t_content">
-                                                    <p>수분도가 평소보다 낮게 측정되었어요.<br /><span>속보습 케어가 필요한 상태예요.</span></p>
-                                                </div>
-                                            </div>
-                                            <div className="skin_a_p_t_box">
-                                                <div className="skin_a_p_t_title">
-                                                    <img src={Analysis01} alt="" />
-                                                    <p>트러블 징후</p>
-                                                    <img src={Analysis03} alt="" />
-                                                </div>
-                                                <div className="skin_a_p_t_content">
-                                                    <p>현재 보이는 트러블은 크지 않아요.<br /><span>청결과 보습 관리를 유지해 주세요.</span></p>
-                                                </div>
+                                                            <div className="skin_a_p_t_content">
+                                                                <p>{detail.description}</p>
+                                                            </div>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <p className="skin_analysis_empty">
+                                                        사진 분석 결과를 준비하고 있어요.
+                                                    </p>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -255,13 +304,21 @@ const Skin = () => {
                                         </div>
 
                                         <div className="skin_ai_c_content">
-                                            <p>오늘 기록과 피부 사진을 함께 분석한 결과, <span>피부 피로도가 높아지면서 수분 밸런스가 일시적으로 무너진 상태</span>로 보여요.<br />볼 부위의 붉은기는 일시적인 자극으로 보이며, 피부 당김과 함께 나타난 것으로 보아 피부 장벽이 평소보다 예민해졌을 가능성이 있어요. 다행히 트러블 징후는 크지 않아 진정과 충분한 보습만으로도 회복을 기대할 수 있는 상태입니다.</p>
-                                            <br /><span>오늘의 분석 결과는 내일 Refresh Time을 조정하고 회복 루틴을 추천하는 데 함께 반영될 예정이에요. 😊</span>
+                                            <p>
+                                                {checkinSummary?.aiComment ||
+                                                    'AI 코멘트를 준비하고 있어요.'}
+                                            </p>
                                         </div>
 
                                         <div className="skin_ai_c_tag">
-                                            <p className='skin_ai_c_t_box'>🌙연속 근무 피로 누적</p>
-                                            <p className='skin_ai_c_t_box'>🌿진정과 보습 중심</p>
+                                            {(checkinSummary?.tags ?? []).map((tag, index) => (
+                                                <p
+                                                    className="skin_ai_c_t_box"
+                                                    key={`${tag}-${index}`}
+                                                >
+                                                    {tag}
+                                                </p>
+                                            ))}
                                         </div>
                                     </div>
                                 </div>
@@ -272,16 +329,23 @@ const Skin = () => {
                                     <div className="skin_recovery_top">
                                         <div className="skin_r_t_box">
                                             <p>3분 회복 모드</p>
-                                            <span>완료</span>
+                                            <span>{isRoutineCompleted ? '완료' : '진행 중'}</span>
                                         </div>
-                                        <p className='skin_r_t_txt'>2단계 루틴으로 피부 회복을 진행했어요.</p>
+                                        <p className="skin_r_t_txt">
+                                            {routineSummary?.totalSteps ?? routineSteps.length}단계 루틴으로
+                                            피부 회복을 {isRoutineCompleted ? '진행했어요.' : '진행 중이에요.'}
+                                        </p>
                                     </div>
 
                                     <div className="skin_recovery_progress">
                                         <div className="skin_progress_line">
                                             <span
                                                 style={{
-                                                    width: `${((currentStep - 1) / (recoverySteps.length - 1)) * 100}%`
+                                                    width: `${Math.min(
+                                                        ((currentStep - 1) /
+                                                            Math.max(recoverySteps.length - 1, 1)) * 100,
+                                                        100
+                                                    )}%`
                                                 }}
                                             />
                                         </div>
@@ -307,35 +371,50 @@ const Skin = () => {
                                     <div className="skin_products">
                                         <p className='skin_p_title'>사용한 제품</p>
                                         <div className="skin_product_all">
-                                            <div className="skin_product">
-                                                <img src={usedProductImages[0]} alt="" />
-                                                <div className="skin_p_box">
-                                                    <div className="skin_p_b_title">
-                                                        <span>STEP 1</span>
-                                                        <p>마일드 시카 세럼</p>
-                                                    </div>
-                                                    <p className='skin_p_b_content'>민감한 피부 보호 | 병풀추출물, 판테놀 함유</p>
-                                                </div>
-                                                <div className="skin_p_time">
-                                                    <img src={SkinTime} alt="" />
-                                                    <p>1M</p>
-                                                </div>
-                                            </div>
+                                            {routineProducts.length > 0 ? (
+                                                routineProducts.map((product, index) => (
+                                                    <div
+                                                        className="skin_product"
+                                                        key={`${product.stepOrder}-${product.cosmeticName}`}
+                                                    >
+                                                        <img
+                                                            src={
+                                                                product.cosmeticImageUrl ||
+                                                                usedProductImages[
+                                                                index % usedProductImages.length
+                                                                ]
+                                                            }
+                                                            alt={product.cosmeticName || '사용한 제품'}
+                                                            className="skin_product_image"
+                                                        />
 
-                                            <div className="skin_product">
-                                                <img src={usedProductImages[1]} alt="" />
-                                                <div className="skin_p_box">
-                                                    <div className="skin_p_b_title">
-                                                        <span>STEP 2</span>
-                                                        <p>세라마이드 수분 크림</p>
+                                                        <div className="skin_p_box">
+                                                            <div className="skin_p_b_title">
+                                                                <span>
+                                                                    STEP {product.stepOrder || index + 1}
+                                                                </span>
+                                                                <p>{product.cosmeticName}</p>
+                                                            </div>
+
+                                                            <p className="skin_p_b_content">
+                                                                {(product.cosmeticFeatures?.length
+                                                                    ? product.cosmeticFeatures
+                                                                    : product.recommendedIngredients ?? []
+                                                                ).join(' | ')}
+                                                            </p>
+                                                        </div>
+
+                                                        <div className="skin_p_time">
+                                                            <img src={SkinTime} alt="" />
+                                                            <p>1M</p>
+                                                        </div>
                                                     </div>
-                                                    <p className='skin_p_b_content'>장벽 보호 | 속 수분 유지 | 히알루론산 함유</p>
-                                                </div>
-                                                <div className="skin_p_time">
-                                                    <img src={SkinTime} alt="" />
-                                                    <p>1M</p>
-                                                </div>
-                                            </div>
+                                                ))
+                                            ) : (
+                                                <p className="skin_products_empty">
+                                                    사용한 제품 정보가 없어요.
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
 

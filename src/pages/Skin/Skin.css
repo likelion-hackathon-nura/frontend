@@ -235,6 +235,25 @@
     color: #A89EA1;
 }
 
+.skin_analysis_photo {
+    width: 319px;
+}
+
+.skin_analysis_photo_content {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.skin_analysis_image {
+    width: 109px;
+    height: 144px;
+    margin-top: 15px;
+    border-radius: 10px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
 .skin_a_p_t_title {
     display: flex;
     align-items: center;
@@ -260,6 +279,13 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    flex: 1;
+    min-width: 0;
+}
+
+.skin_analysis_empty {
+    font-size: 10px;
+    color: #7B7578;
 }
 
 /* ===================================================== */
@@ -295,11 +321,14 @@
 
 .skin_ai_c_tag {
     display: flex;
+    flex-wrap: wrap;
 }
 
 .skin_ai_c_t_box {
-    width: 111px;
+    min-width: 111px;
     height: 25px;
+    padding: 0 10px;
+    box-sizing: border-box;
     border-radius: 100px;
     background-color: white;
     font-weight: 400;
@@ -366,13 +395,15 @@
     font-size: 12px;
     letter-spacing: -2%;
     color: #27877A;
-    width: 46px;
     height: 21px;
     border-radius: 100px;
     background-color: #DAF8F4;
     display: flex;
     align-items: center;
     justify-content: center;
+    min-width: 46px;
+    padding: 0 8px;
+    box-sizing: border-box;
 }
 
 .skin_recovery_top {
@@ -465,6 +496,13 @@
     align-items: center;
 }
 
+.skin_product_image {
+    width: 51px;
+    height: 51px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
 .skin_p_b_title {
     display: flex;
     align-items: center;
@@ -526,6 +564,11 @@
     flex-direction: column;
     margin: 14px 0 20px 0;
     gap: 19px;
+}
+
+.skin_products_empty {
+    font-size: 12px;
+    color: #7B7578;
 }
 
 /* ===================================================== */
