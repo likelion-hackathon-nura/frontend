@@ -25,7 +25,7 @@ const CheckIn02 = ({ tightness, redness, onChange, onNext, }) => {
                         className={`checkin02_m_1_box ${tightness === 'VERY_LOW' ? 'span' : ''}`}
                         onClick={() => onChange('tightness', 'VERY_LOW')}
                     >
-                        <img src={FatigueLevel01} alt="" />
+                        <img src={FatigueLevel04} alt="" />
                         <p>없음</p>
                     </div>
 
@@ -49,7 +49,7 @@ const CheckIn02 = ({ tightness, redness, onChange, onNext, }) => {
                         className={`checkin02_m_1_box ${tightness === 'HIGH' ? 'span' : ''}`}
                         onClick={() => onChange('tightness', 'HIGH')}
                     >
-                        <img src={FatigueLevel04} alt="" />
+                        <img src={FatigueLevel01} alt="" />
                         <p>심함</p>
                     </div>
                 </div>
@@ -64,7 +64,7 @@ const CheckIn02 = ({ tightness, redness, onChange, onNext, }) => {
                         className={`checkin02_m_2_box ${redness === 'VERY_LOW' ? 'span' : ''}`}
                         onClick={() => onChange('redness', 'VERY_LOW')}
                     >
-                        <img src={FatigueLevel01} alt="" />
+                        <img src={FatigueLevel04} alt="" />
                         <p>없음</p>
                     </div>
 
@@ -88,7 +88,7 @@ const CheckIn02 = ({ tightness, redness, onChange, onNext, }) => {
                         className={`checkin02_m_2_box ${redness === 'HIGH' ? 'span' : ''}`}
                         onClick={() => onChange('redness', 'HIGH')}
                     >
-                        <img src={FatigueLevel04} alt="" />
+                        <img src={FatigueLevel01} alt="" />
                         <p>심함</p>
                     </div>
                 </div>

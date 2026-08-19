@@ -101,7 +101,7 @@ const Skin = () => {
         loadTodaySkin()
     }, [])
 
-    const [currentSlide, setCurrentSlide] = useState(1)
+    const [currentSlide, setCurrentSlide] = useState(0)
     const [touchStart, setTouchStart] = useState(null)
     const handleTouchStart = (e) => {
         if (!isCheckedIn) return
@@ -208,14 +208,12 @@ const Skin = () => {
                             onTouchStart={handleTouchStart}
                             onTouchEnd={handleTouchEnd}
                         >
-                            <div
-                                className="skin_slider"
-                                style={{
-                                    transform: `translateX(-${currentSlide * 100}%)`
-                                }}
-                            >
+                            <div className="skin_slider">
                                 {/* =====================1페이지: 오늘의 피부 분석===================== */}
-                                <div className="skin_analysis">
+                                <div
+                                    className={`skin_analysis ${currentSlide !== 0 ? 'is-hidden' : ''
+                                        }`}
+                                >
 
                                     <div className="skin_analysis_status">
                                         <div className="skin_a_status_box">
@@ -324,7 +322,10 @@ const Skin = () => {
                                 </div>
 
                                 {/* =====================2페이지: 3분 회복 모드===================== */}
-                                <div className="skin_recovery">
+                                <div
+                                    className={`skin_recovery ${currentSlide !== 1 ? 'is-hidden' : ''
+                                        }`}
+                                >
 
                                     <div className="skin_recovery_top">
                                         <div className="skin_r_t_box">
