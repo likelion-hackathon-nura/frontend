@@ -24,6 +24,55 @@ import Social_icon from '../../assets/images/social_icon.svg'
 import Refresh_icon from '../../assets/images/refresh_icon.svg'
 import Mytime_icon from '../../assets/images/mytime_icon.svg'
 
+const splitHeadline = value => {
+    const text = value.trim()
+    const prefixMatch = text.match(/^(이번 주 Refresh Time[은을])\s*/)
+
+    if (prefixMatch) {
+        const top = prefixMatch[1]
+        const rest = text.slice(prefixMatch[0].length).trim()
+        const priorityIndex = rest.indexOf('우선 ')
+
+        if (priorityIndex > 0) {
+            return {
+                top,
+                highlight: rest.slice(0, priorityIndex).trim(),
+                emphasis: rest.slice(priorityIndex).trim(),
+            }
+        }
+
+        const words = rest.split(/\s+/)
+        const middle = Math.max(1, Math.ceil(words.length / 2))
+
+        return {
+            top,
+            highlight: words.slice(0, middle).join(' '),
+            emphasis: words.slice(middle).join(' '),
+        }
+    }
+
+    const words = text.split(/\s+/)
+    const firstEnd = Math.max(1, Math.round(words.length * 0.3))
+    const secondEnd = Math.max(
+        firstEnd + 1,
+        Math.round(words.length * 0.65)
+    )
+
+    return {
+        top: words.slice(0, firstEnd).join(' '),
+        highlight: words.slice(firstEnd, secondEnd).join(' '),
+        emphasis: words.slice(secondEnd).join(' '),
+    }
+}
+
+const splitParticle = value => {
+    const matched = value.match(/^(.*?)([은는이가을를])$/)
+
+    return {
+        text: matched?.[1] || value,
+        particle: matched?.[2] || '',
+    }
+}
 
 const COMMENT_ICONS = [
     Comment_moon,
@@ -74,6 +123,16 @@ const Report = () => {
         aiComment?.bullet3,
     ].filter(Boolean)
 
+    const headline =
+        aiComment?.headline || '이번 주 리포트를 준비하고 있어요.'
+
+    const isGuideComment = headline.startsWith('반가워요!')
+    const headlineLines = isGuideComment ? null : splitHeadline(headline)
+
+    const highlightedLine = headlineLines
+        ? splitParticle(headlineLines.highlight)
+        : null
+
     const lastWeekByDay = new Map(
         (recoveryTrend?.lastWeek || []).map((item) => [
             item.dayOfWeek,
@@ -81,11 +140,26 @@ const Report = () => {
         ])
     )
 
-    const graphData = (recoveryTrend?.thisWeek || []).map((item) => ({
+    const graphData = (recoveryTrend?.thisWeek || []).map(item => ({
         day: item.dayOfWeek,
-        current: item.hours ?? 0,
-        previous: lastWeekByDay.get(item.dayOfWeek) ?? 0,
+        current: Number(item.hours) || 0,
+        previous: Number(lastWeekByDay.get(item.dayOfWeek)) || 0,
     }))
+
+    const graphMaxValue = Math.max(
+        0,
+        ...graphData.flatMap(item => [item.current, item.previous])
+    )
+
+    const yAxisMax = Math.max(
+        6,
+        Math.ceil((graphMaxValue + 1) / 2) * 2
+    )
+
+    const yAxisTicks = Array.from(
+        { length: yAxisMax / 2 + 1 },
+        (_, index) => index * 2
+    )
 
     const avgRefreshTime = parseRefreshTime(
         recoveryTrend?.averageRefreshTimeText
@@ -120,11 +194,32 @@ const Report = () => {
                                 </div>
                                 <div className="report_w_c_2">
 
-                                    <div className="report_w_c_title">
-                                        <p className="report_w_c_t_1">
-                                            {aiComment?.headline ||
-                                                '이번 주 리포트를 준비하고 있어요.'}
-                                        </p>
+                                    <div
+                                        className={`report_w_c_title ${isGuideComment ? 'guide' : 'analysis'
+                                            }`}
+                                    >
+                                        {isGuideComment ? (
+                                            <p className="report_w_c_guide">{headline}</p>
+                                        ) : (
+                                            <>
+                                                <p className="report_w_c_t_1">
+                                                    {headlineLines.top}
+                                                </p>
+
+                                                {headlineLines.highlight && (
+                                                    <p className="report_w_c_t_2">
+                                                        {highlightedLine.text}
+                                                        <span>{highlightedLine.particle}</span>
+                                                    </p>
+                                                )}
+
+                                                {headlineLines.emphasis && (
+                                                    <p className="report_w_c_t_3">
+                                                        {headlineLines.emphasis}
+                                                    </p>
+                                                )}
+                                            </>
+                                        )}
                                     </div>
 
                                     <img className="report_w_c_character" src={Comment_character} alt="" />
@@ -157,7 +252,7 @@ const Report = () => {
                                                 <LineChart
                                                     data={graphData}
                                                     margin={{
-                                                        top: 3,
+                                                        top: 15,
                                                         right: 20,
                                                         left: -30,
                                                         bottom: 0,
@@ -185,8 +280,9 @@ const Report = () => {
                                                     />
 
                                                     <YAxis
-                                                        domain={[0, 6]}
-                                                        ticks={[0, 2, 4, 6]}
+                                                        domain={[0, yAxisMax]}
+                                                        ticks={yAxisTicks}
+                                                        allowDecimals={false}
                                                         axisLine={{ stroke: '#CCCCCC' }}
                                                         tickLine={false}
                                                         tick={{
@@ -211,6 +307,7 @@ const Report = () => {
                                                         activeDot={false}
                                                         label={{
                                                             position: 'top',
+                                                            offset: 8,
                                                             fill: '#FEA1A1',
                                                             fontSize: 12,
                                                             fontWeight: 400,
@@ -232,6 +329,7 @@ const Report = () => {
                                                         activeDot={false}
                                                         label={{
                                                             position: 'top',
+                                                            offset: 8,
                                                             fill: '#E7CA94',
                                                             fontSize: 12,
                                                             fontWeight: 400,

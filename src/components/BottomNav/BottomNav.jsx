@@ -27,7 +27,6 @@ const BottomNav = () => {
     navigate('/work-schedule/scan-loading', { state: { file } })
   }
 
-  // 경로는 각자 수정할 것
   const HOME_PATH = '/home'
   const REPORT_PATH = '/report'
   const SKIN_PATH = '/skin'
