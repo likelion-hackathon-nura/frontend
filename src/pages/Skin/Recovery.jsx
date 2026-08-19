@@ -13,8 +13,8 @@ import {
 } from '../../api/skin'
 
 import PrevBtn from '../../assets/images/prev_btn.svg'
-import RecoveryIcon01 from '../../assets/images/recovery_icon_1.svg'
-import RecoveryIcon02 from '../../assets/images/recovery_icon_2.svg'
+import RecoveryIcon01 from '../../assets/images/recovery_icon_1.png'
+import RecoveryIcon02 from '../../assets/images/recovery_icon_2.png'
 import RecoveryTime from '../../assets/images/skin_time.svg'
 import RecoveryLine from '../../assets/images/skin_line.svg'
 import RecoveryUseProduct01 from '../../assets/images/recovery_product_1.svg'

@@ -8,13 +8,13 @@
 
 /* ======================================================== */
 
-.checkin02_top{
+.checkin02_top {
     font-weight: 500;
     font-size: 24px;
     letter-spacing: -2%;
 }
 
-.checkin02_main{
+.checkin02_main {
     width: 393px;
     margin-left: -22px;
     background-color: #F3F7F7;
@@ -24,7 +24,7 @@
     flex: 1;
 }
 
-.checkin02_m_1{
+.checkin02_m_1 {
     width: 350px;
     height: 125px;
     background-color: white;
@@ -37,7 +37,7 @@
     gap: 9px;
 }
 
-.checkin02_m_1_box{
+.checkin02_m_1_box {
     width: 75px;
     height: 103px;
     border-radius: 10px;
@@ -53,12 +53,12 @@
     letter-spacing: -2%;
 }
 
-.checkin02_m_1_box.span{
+.checkin02_m_1_box.span {
     background-color: rgba(143, 220, 210, 0.4);
     border: 1px solid #8FDCD2;
 }
 
-.checkin02_txt01{
+.checkin02_txt01 {
     font-weight: 600;
     font-size: 20px;
     letter-spacing: -2%;
@@ -66,7 +66,7 @@
     margin-left: -30px;
 }
 
-.checkin02_txt01 span{
+.checkin02_txt01 span {
     font-weight: 400;
     font-size: 14px;
     color: #7B7578;
@@ -74,7 +74,7 @@
 
 /* ======================================================== */
 
-.checkin02_m_2{
+.checkin02_m_2 {
     width: 350px;
     height: 125px;
     background-color: white;
@@ -87,7 +87,7 @@
     gap: 9px;
 }
 
-.checkin02_m_2_box{
+.checkin02_m_2_box {
     width: 75px;
     height: 103px;
     border-radius: 10px;
@@ -103,12 +103,12 @@
     letter-spacing: -2%;
 }
 
-.checkin02_m_2_box.span{
+.checkin02_m_2_box.span {
     background-color: rgba(143, 220, 210, 0.4);
     border: 1px solid #8FDCD2;
 }
 
-.checkin02_txt02{
+.checkin02_txt02 {
     font-weight: 600;
     font-size: 20px;
     letter-spacing: -2%;
@@ -116,7 +116,7 @@
     margin-left: -130px;
 }
 
-.checkin02_txt02 span{
+.checkin02_txt02 span {
     font-weight: 400;
     font-size: 14px;
     color: #7B7578;

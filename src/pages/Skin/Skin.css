@@ -291,7 +291,7 @@
     width: 319px;
     background-color: #F4F0FE;
     border-radius: 10px;
-    margin: 14px 0 21px 0;
+    margin: 14px 0 18px 0;
 }
 
 .skin_ai_c_title {
@@ -495,8 +495,7 @@
 }
 
 .skin_product_image {
-    width: 51px;
-    height: 51px;
+    width: 67px;
     object-fit: contain;
     flex-shrink: 0;
 }
