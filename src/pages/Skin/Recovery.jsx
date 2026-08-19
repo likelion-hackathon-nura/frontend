@@ -32,20 +32,21 @@ const productImageMap = {
 }
 
 const createMatchedProduct = stepData => {
-    if (!stepData?.cosmetic_name) return null
+    if (!stepData?.cosmeticName) return null
 
-    const productFeatures = Array.isArray(stepData.product_features)
-        ? stepData.product_features
+    const productFeatures = Array.isArray(stepData.productFeatures)
+        ? stepData.productFeatures
         : []
 
     return {
-        name: [stepData.cosmetic_brand, stepData.cosmetic_name]
+        name: [stepData.cosmeticBrand, stepData.cosmeticName]
             .filter(Boolean)
             .join(' '),
         description: productFeatures[0] || stepData.reason || '',
-        ingredients: productFeatures[1] || '',
+        ingredients: productFeatures[1] || stepData.cosmeticCoreIngredients || '',
         image:
-            productImageMap[stepData.category_color] ||
+            stepData.cosmeticUrl ||
+            productImageMap[stepData.categoryColor] ||
             RecoveryUseProduct01,
     }
 }
@@ -149,7 +150,7 @@ const Recovery = () => {
                         <p className="recovery_top_1">퇴근 체크인 분석 결과</p>
                         <p className="recovery_top_2">오늘은 {routineSteps.length}단계로<br />회복 모드를 안내해드릴게요.</p>
                         <p className="recovery_top_3">
-                            {routine.summary_comment ||
+                            {routine.summaryComment ||
                                 '오늘의 피부 상태에 맞는 회복 루틴을 준비했어요.'}
                         </p>
                     </div>
@@ -161,7 +162,7 @@ const Recovery = () => {
                             <div className="recovery_step_content">
                                 <div className="recovery_step_title">
                                     <span>STEP 1</span>
-                                    <p>{routineSteps[0]?.care_type_kr || routineSteps[0]?.title || '진정'}</p>
+                                    <p>{routineSteps[0]?.careTypeKr || routineSteps[0]?.title || '진정'}</p>
                                 </div>
                                 <p>
                                     {routineSteps[0]?.title ||
@@ -181,7 +182,7 @@ const Recovery = () => {
                             <div className="recovery_step_content">
                                 <div className="recovery_step_title">
                                     <span>STEP 2</span>
-                                    <p>{routineSteps[1]?.care_type_kr || routineSteps[1]?.title || '보습'}</p>
+                                    <p>{routineSteps[1]?.careTypeKr || routineSteps[1]?.title || '보습'}</p>
                                 </div>
                                 <p>
                                     {routineSteps[1]?.title ||

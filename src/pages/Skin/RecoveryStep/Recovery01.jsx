@@ -8,7 +8,7 @@ import TitleLine from '../../../assets/images/recovery_title_icon.svg'
 const Recovery01 = ({ onNext, matchedProduct, stepData, nextStepData, }) => {
 
     const ingredients = (() => {
-        const value = stepData?.recommended_ingredients
+        const value = stepData?.recommendedIngredients
 
         if (!value) {
             return ['병풀추출물(CICA)', '판테놀', '알란토인']
@@ -53,20 +53,20 @@ const Recovery01 = ({ onNext, matchedProduct, stepData, nextStepData, }) => {
             <div className="recovery01_progress">
                 <div className="recovery01_progress_step active">
                     <span>1</span>
-                    <p>{stepData?.care_type_kr || stepData?.title || '진정'}</p>
+                    <p>{stepData?.careTypeKr || stepData?.title || '진정'}</p>
                 </div>
 
                 <div className="recovery01_progress_line" />
 
                 <div className="recovery01_progress_step">
                     <span>2</span>
-                    <p>{nextStepData?.care_type_kr || nextStepData?.title || '보습'}</p>
+                    <p>{nextStepData?.careTypeKr || nextStepData?.title || '보습'}</p>
                 </div>
             </div>
 
             <div className="recovery01_top">
                 <div className="recovery01_title">
-                    <span>STEP {stepData?.step_order || 1}</span>
+                    <span>STEP {stepData?.stepOrder || 1}</span>
                     <p>{stepData?.title || '먼저 피부 자극을 진정시켜볼게요.'}</p>
                 </div>
 
@@ -89,7 +89,7 @@ const Recovery01 = ({ onNext, matchedProduct, stepData, nextStepData, }) => {
                         <p>추천 성분</p>
                     </div>
                     <p className="recovery01_section_description">
-                        {stepData?.recommended_ingredient_description ||
+                        {stepData?.recommendedIngredientDescription ||
                             '자극을 완화하고 피부를 편안하게 진정시키는 데 도움이 되는 성분이에요.'}
                     </p>
                     <div className="recovery01_tags">

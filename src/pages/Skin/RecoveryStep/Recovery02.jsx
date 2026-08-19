@@ -9,7 +9,7 @@ import TitleLine from '../../../assets/images/recovery_title_icon.svg'
 const Recovery02 = ({ matchedProduct, onComplete, stepData, previousStepData, }) => {
 
     const ingredients = (() => {
-        const value = stepData?.recommended_ingredients
+        const value = stepData?.recommendedIngredients
 
         if (!value) {
             return ['세라마이드', '히알루론산', '스쿠알란']
@@ -57,7 +57,7 @@ const Recovery02 = ({ matchedProduct, onComplete, stepData, previousStepData, })
                         <img src={CheckWhite02} alt="진정 단계 완료" />
                     </span>
                     <p>
-                        {previousStepData?.care_type_kr ||
+                        {previousStepData?.careTypeKr ||
                             previousStepData?.title ||
                             '진정'}
                     </p>
@@ -68,7 +68,7 @@ const Recovery02 = ({ matchedProduct, onComplete, stepData, previousStepData, })
                 <div className="recovery02_progress_step active">
                     <span>2</span>
                     <p>
-                        {stepData?.care_type_kr ||
+                        {stepData?.careTypeKr ||
                             stepData?.title ||
                             '보습'}
                     </p>
@@ -77,7 +77,7 @@ const Recovery02 = ({ matchedProduct, onComplete, stepData, previousStepData, })
 
             <div className="recovery02_top">
                 <div className="recovery02_title">
-                    <span>STEP {stepData?.step_order || 2}</span>
+                    <span>STEP {stepData?.stepOrder || 2}</span>
                     <p>{stepData?.title || '수분을 채워 피부를 보호해주세요.'}</p>
                 </div>
 
@@ -101,7 +101,7 @@ const Recovery02 = ({ matchedProduct, onComplete, stepData, previousStepData, })
                     </div>
 
                     <p className="recovery02_section_description">
-                        {stepData?.recommended_ingredient_description ||
+                        {stepData?.recommendedIngredientDescription ||
                             '피부 속 수분을 유지하고 당김을 완화하는 데 도움이 되는 성분이에요.'}
                     </p>
 
