@@ -133,6 +133,30 @@
   color: #7a6a3d;
 }
 
+/* 인식 실패 화면: 성공 화면의 캘린더 카드 자리를 안내 문구가 대신한다. */
+.scan-result-empty-card {
+  width: 350px;
+  min-height: 138px;
+  box-sizing: border-box;
+  padding: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+  background-color: var(--color-white);
+}
+
+.scan-result-empty-text {
+  text-align: center;
+  line-height: var(--line-height-base);
+
+  font-size: var(--font-size-14);
+  font-weight: var(--font-regular);
+  color: var(--color-text-secondary);
+}
+
 .scan-result-hint {
   margin-top: 28px;
 

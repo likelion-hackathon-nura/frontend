@@ -83,13 +83,38 @@ function ScanResult() {
     }
   };
 
+  // 인식 실패 화면도 성공 화면과 같은 골격(헤더 - 타이틀 - 카드)을 쓴다.
   if (days.length === 0) {
     return (
       <div className="page scan-result-page">
-        <p className="scan-result-title">인식된 근무표가 없어요.</p>
-        <button type="button" className="btn btn-primary btn-full" onClick={() => navigate('/work-schedule/manual-entry')}>
-          직접 작성하기
-        </button>
+        <div className="scan-result-header">
+          <button type="button" className="scan-result-back" onClick={() => navigate(-1)} aria-label="뒤로가기">
+            <BackIcon />
+          </button>
+        </div>
+
+        <h1 className="scan-result-title">인식된 근무표가 없어요.</h1>
+        <p className="scan-result-subtitle">사진이 흐리거나 표를 읽지 못했어요. 다시 스캔하거나 직접 작성해 주세요.</p>
+
+        <div className="scan-result-card-wrap">
+          <div className="scan-result-card">
+            <div className="scan-result-empty-card">
+              <p className="scan-result-empty-text">
+                근무표를 불러오지 못했어요.
+                <br />
+                직접 작성해도 근무 유형은 언제든 수정할 수 있어요.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              className="btn btn-primary btn-full scan-result-submit"
+              onClick={() => navigate('/work-schedule/manual-entry')}
+            >
+              직접 작성하기
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
