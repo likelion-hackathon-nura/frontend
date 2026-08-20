@@ -123,7 +123,7 @@ const AddCosmetic = () => {
     return (
         <div className="addcosmetic_wrap">
             <div className="addcosmetic_top">
-                <button type="button" className="addcosmetic_prev_btn" onClick={() => navigate(-1)}>
+                <button type="button" className="addcosmetic_prev_btn" onClick={() => navigate('/mypage')}>
                     <img src={PrevBtn} alt="뒤로가기" />
                 </button>
                 <p>화장품 추가하기</p>

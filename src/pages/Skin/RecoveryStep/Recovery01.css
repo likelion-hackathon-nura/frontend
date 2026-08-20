@@ -12,6 +12,10 @@
     justify-content: center;
     margin-top: 4px;
     margin-left: -22px;
+
+    width: 393px;
+    padding: 0 40px;
+    box-sizing: border-box;
 }
 
 .recovery01_progress_step {
@@ -19,6 +23,9 @@
     flex-direction: column;
     align-items: center;
     gap: 4px;
+
+    width: 32px;
+    flex-shrink: 0;
 }
 
 .recovery01_progress_step span {
@@ -34,6 +41,8 @@
     letter-spacing: -2%;
     color: #A89EA1;
     background-color: #D9D2D4;
+
+    flex-shrink: 0;
 }
 
 .recovery01_progress_step.active span {
@@ -46,13 +55,26 @@
     font-weight: 500;
     letter-spacing: -2%;
     color: black;
+    text-align: center;
+    word-break: keep-all;
 }
 
 .recovery01_progress_line {
-    width: 105px;
+    min-width: 24px;
+    max-width: 90px;
+    flex: 1;
     height: 2px;
     margin-top: 15px;
     background-color: #D9D2D4;
+}
+
+.recovery01_progress_line.active {
+    background-color: #60C2B4;
+}
+
+.recovery01_progress_step span img {
+    width: 15px;
+    height: auto;
 }
 
 /* ============================================= */
@@ -150,7 +172,7 @@
 
 /* ============================================= */
 
-.recovery01_section02{
+.recovery01_section02 {
     margin-top: 24px;
 }
 

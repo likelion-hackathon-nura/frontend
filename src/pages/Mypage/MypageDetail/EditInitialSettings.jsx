@@ -244,7 +244,7 @@ const EditInitialSettings = () => {
     return (
         <div className="initialsettings_wrap">
             <div className="initialsettings_top">
-                <button type="button" className="initialsettings_prev_btn" onClick={() => navigate(-1)}>
+                <button type="button" className="initialsettings_prev_btn" onClick={() => navigate('/mypage')}>
                     <img src={PrevBtn} alt="뒤로가기" />
                 </button>
                 <p>초기 설정 수정</p>

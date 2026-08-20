@@ -127,7 +127,7 @@ const Feedback = () => {
         <div className="feedback_wrap">
 
             <div className="feedback_top">
-                <button type="button" className="feedback_prev_btn" onClick={() => navigate(-1)}>
+                <button type="button" className="feedback_prev_btn" onClick={() => navigate('/mypage')}>
                     <img src={PrevBtn} alt="뒤로가기" />
                 </button>
                 <p>피드백 보내기</p>

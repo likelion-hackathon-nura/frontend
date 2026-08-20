@@ -31,6 +31,11 @@ const productImageMap = {
     BLUE: RecoveryUseProduct04,
 }
 
+const RECOVERY_STEP_IMAGES = [
+    RecoveryIcon01,
+    RecoveryIcon02,
+]
+
 const createMatchedProduct = stepData => {
     if (!stepData?.cosmeticName) return null
 
@@ -58,6 +63,16 @@ const Recovery = () => {
     const requestStarted = useRef(false)
     const [routine, setRoutine] = useState(null)
     const [loading, setLoading] = useState(true)
+
+    const [stepImages] = useState(() =>
+        Array.from(
+            { length: 3 },
+            () =>
+                RECOVERY_STEP_IMAGES[
+                Math.floor(Math.random() * RECOVERY_STEP_IMAGES.length)
+                ]
+        )
+    )
 
     useEffect(() => {
         if (requestStarted.current) return
@@ -96,7 +111,8 @@ const Recovery = () => {
         loadRoutine()
     }, [navigate])
 
-    const routineSteps = routine?.steps || []
+    const routineSteps = (routine?.steps || []).slice(0, 3)
+    const completionStep = routineSteps.length + 1
 
     const handleNext = () => {
         setStep(prev => prev + 1)
@@ -113,7 +129,7 @@ const Recovery = () => {
     const handleRoutineComplete = async () => {
         try {
             await completeTodaySkinRoutine()
-            setStep(3)
+            setStep(completionStep)
         } catch (error) {
             console.error('회복 루틴 완료 처리 실패:', error)
             alert(error.message || '회복 루틴 완료 처리에 실패했습니다.')
@@ -122,8 +138,12 @@ const Recovery = () => {
 
     const handleRecoveryFinish = () => navigate('/skin')
 
-    const matchedProduct = createMatchedProduct(routineSteps[0])
-    const matchedProduct02 = createMatchedProduct(routineSteps[1])
+    const isRoutineStep =
+        step >= 1 && step <= routineSteps.length
+
+    const currentStepData = routineSteps[step - 1]
+
+    const matchedProduct = createMatchedProduct(currentStepData)
 
     if (loading || !routine) {
         return (
@@ -135,7 +155,7 @@ const Recovery = () => {
 
     return (
         <div className="page recovery_wrap">
-            {step < 3 && (
+            {step < completionStep && (
                 <button
                     className="recovery_prev_btn"
                     onClick={handlePrev}
@@ -156,45 +176,47 @@ const Recovery = () => {
                     </div>
 
                     <div className="recovery_step_list">
+                        {routineSteps.map((routineStep, index) => (
+                            <React.Fragment
+                                key={routineStep.stepOrder ?? index}
+                            >
+                                <div className="recovery_step">
+                                    <img
+                                        src={stepImages[index]}
+                                        alt=""
+                                    />
 
-                        <div className="recovery_step">
-                            <img src={RecoveryIcon01} alt="" />
-                            <div className="recovery_step_content">
-                                <div className="recovery_step_title">
-                                    <span>STEP 1</span>
-                                    <p>{routineSteps[0]?.careTypeKr || routineSteps[0]?.title || '진정'}</p>
+                                    <div className="recovery_step_content">
+                                        <div className="recovery_step_title">
+                                            <span>
+                                                STEP {routineStep.stepOrder || index + 1}
+                                            </span>
+
+                                            <p>
+                                                {routineStep.careTypeKr ||
+                                                    routineStep.careType ||
+                                                    `맞춤 케어 ${index + 1}`}
+                                            </p>
+                                        </div>
+
+                                        <p>
+                                            {routineStep.title ||
+                                                routineStep.description ||
+                                                '오늘의 피부 상태에 맞는 케어를 진행해요.'}
+                                        </p>
+                                    </div>
+
+                                    <div className="recovery_step_time">
+                                        <img src={RecoveryTime} alt="" />
+                                        <p>1M</p>
+                                    </div>
                                 </div>
-                                <p>
-                                    {routineSteps[0]?.title ||
-                                        '피부를 외부 자극으로부터 가라앉혀요.'}
-                                </p>
-                            </div>
-                            <div className="recovery_step_time">
-                                <img src={RecoveryTime} alt="" />
-                                <p>1M</p>
-                            </div>
-                        </div>
 
-                        <img src={RecoveryLine} alt="" />
-
-                        <div className="recovery_step">
-                            <img src={RecoveryIcon02} alt="" />
-                            <div className="recovery_step_content">
-                                <div className="recovery_step_title">
-                                    <span>STEP 2</span>
-                                    <p>{routineSteps[1]?.careTypeKr || routineSteps[1]?.title || '보습'}</p>
-                                </div>
-                                <p>
-                                    {routineSteps[1]?.title ||
-                                        '수분을 채워 피부 장벽을 보호해요.'}
-                                </p>
-                            </div>
-
-                            <div className="recovery_step_time">
-                                <img src={RecoveryTime} alt="" />
-                                <p>1M</p>
-                            </div>
-                        </div>
+                                {index < routineSteps.length - 1 && (
+                                    <img src={RecoveryLine} alt="" />
+                                )}
+                            </React.Fragment>
+                        ))}
                     </div>
 
                     <button className="recovery_bot_btn" onClick={handleNext}>
@@ -204,25 +226,27 @@ const Recovery = () => {
 
             )}
 
-            {step === 1 && (
-                <Recovery01
-                    onNext={handleNext}
-                    matchedProduct={matchedProduct}
-                    stepData={routineSteps[0]}
-                    nextStepData={routineSteps[1]}
-                />
+            {isRoutineStep && (
+                step === routineSteps.length ? (
+                    <Recovery02
+                        matchedProduct={matchedProduct}
+                        stepData={currentStepData}
+                        stepNumber={step}
+                        routineSteps={routineSteps}
+                        onComplete={handleRoutineComplete}
+                    />
+                ) : (
+                    <Recovery01
+                        onNext={handleNext}
+                        matchedProduct={matchedProduct}
+                        stepData={currentStepData}
+                        stepNumber={step}
+                        routineSteps={routineSteps}
+                    />
+                )
             )}
 
-            {step === 2 && (
-                <Recovery02
-                    matchedProduct={matchedProduct02}
-                    stepData={routineSteps[1]}
-                    previousStepData={routineSteps[0]}
-                    onComplete={handleRoutineComplete}
-                />
-            )}
-
-            {step === 3 && (
+            {step === completionStep && (
                 <Recovery03 onComplete={handleRecoveryFinish} />
             )}
 
