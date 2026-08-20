@@ -1,0 +1,88 @@
+.checkin01_wrap {
+    width: 100%;
+    box-sizing: border-box;
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+}
+
+/* ============================================ */
+
+.checkin01_top{
+    font-weight: 500;
+    font-size: 24px;
+    letter-spacing: -2%;
+}
+
+.checkin01_main{
+    width: 393px;
+    margin-left: -22px;
+    background-color: #F3F7F7;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+}
+
+.checkin01_m_1{
+    font-weight: 500;
+    font-size: 15px;
+    letter-spacing: -2%;
+    margin-top: 21px;
+    margin-left: -115px;
+}
+
+/* =================================================== */
+
+.checkin01_m_2{
+    width: 350px;
+    height: 125px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 14px;
+    gap: 9px;
+}
+
+.checkin01_m_2_box{
+    width: 58px;
+    height: 103px;
+    border-radius: 10px;
+    border: 1px solid #F0EDEE;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 11px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: -2%;
+}
+
+.checkin01_m_2_box.span{
+    background-color: rgba(143, 220, 210, 0.4);
+    border: 1px solid #8FDCD2;
+}
+
+/* =================================================== */
+
+.checkin01_m_3{
+    width: 350px;
+    height: 74px;
+    background-color: #60C2B4;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: -2%;
+    color: white;
+    gap: 21px;
+    margin-top: 28px;
+}

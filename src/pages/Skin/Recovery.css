@@ -1,0 +1,123 @@
+.recovery_wrap {
+    width: 393px;
+    box-sizing: border-box;
+
+    background:
+        linear-gradient(192deg,
+            rgba(225, 255, 189, 0.16) 0%,
+            rgba(255, 255, 255, 0.80) 103.94%),
+        linear-gradient(167deg,
+            rgba(159, 221, 255, 0.40) 0%,
+            rgba(255, 255, 255, 0.50) 93.8%),
+        #FFFFFF;
+
+
+    padding: 51px 0 0 22px;
+    display: flex;
+    flex-direction: column;
+}
+
+.recovery_bot_btn {
+    margin-bottom: 30px;
+    width: 350px;
+    height: 51px;
+    cursor: pointer;
+    background-color: #2E3A38;
+    border-radius: 10px;
+    font-weight: 500;
+    font-size: 15px;
+    letter-spacing: -2%;
+    color: white;
+    margin-top: auto;
+}
+
+.prev_btn {
+    width: 8px;
+}
+
+/* ======================================================= */
+
+.recovery_top_1 {
+    margin-top: 26px;
+    font-weight: 500;
+    font-size: 15px;
+    letter-spacing: -2%;
+    color: #60C2B4;
+}
+
+.recovery_top_2 {
+    font-weight: 600;
+    font-size: 28px;
+    letter-spacing: -2%;
+    margin-top: 10px;
+}
+
+.recovery_top_3 {
+    font-weight: 400;
+    font-size: 16px;
+    letter-spacing: -2%;
+    color: #7B7578;
+    margin-top: 10px;
+    width: 350px;
+    white-space: pre-line;
+}
+
+/* ======================================================= */
+
+.recovery_step_list {
+    width: 350px;
+    height: auto;
+    min-height: 189px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.05);
+    margin-top: 53px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 23px;
+    box-sizing: border-box;
+    padding: 21px 17px 22px 17px;
+}
+
+.recovery_step {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.recovery_step_title {
+    display: flex;
+    font-weight: 500;
+    font-size: 16px;
+    letter-spacing: -2%;
+    gap: 9px;
+    color: black;
+}
+
+.recovery_step_title span {
+    color: #60C2B4;
+}
+
+.recovery_step_content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: -2%;
+    color: #7B7578;
+    flex: 1;
+    min-width: 0;
+    margin: 0 12px;
+    line-height: 1.4;
+}
+
+.recovery_step_time {
+    display: flex;
+    flex-direction: column;
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: -2%;
+    color: #60C2B4;
+}

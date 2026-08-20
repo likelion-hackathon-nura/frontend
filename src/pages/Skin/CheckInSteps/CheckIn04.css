@@ -1,0 +1,35 @@
+.checkin04_wrap {
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.analysis_progress {
+    width: 313px;
+    height: 12px;
+
+    overflow: hidden;
+    border-radius: 100px;
+    background-color: #ffffff;
+}
+
+.analysis_progress_fill {
+    height: 100%;
+
+    border-radius: 100px;
+    background-color: #80D8CE;
+
+    transition: width 0.1s linear;
+}
+
+.analysis_text {
+    margin-top: 27px;
+
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -2%;
+    text-align: center;
+}

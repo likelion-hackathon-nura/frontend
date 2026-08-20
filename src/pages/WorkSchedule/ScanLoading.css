@@ -1,0 +1,39 @@
+.scan-loading-page {
+  max-width: 393px;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 222px;
+}
+
+.scan-spinner {
+  width: 175px;
+  height: 175px;
+  animation: scan-spinner-rotate 1.2s linear infinite;
+}
+
+@keyframes scan-spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.scan-loading-title {
+  margin-top: 24px;
+
+  font-size: var(--font-size-24);
+  font-weight: var(--font-bold);
+  color: var(--color-text-primary);
+}
+
+.scan-loading-subtitle {
+  margin-top: 18px;
+  
+  font-size: var(--font-size-20);
+  line-height: 1.3;
+  color: var(--color-text-secondary);
+  text-align: center;
+}

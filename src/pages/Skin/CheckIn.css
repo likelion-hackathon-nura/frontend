@@ -1,0 +1,75 @@
+.checkin_wrap {
+    width: 393px;
+    box-sizing: border-box;
+
+    background:
+        linear-gradient(192deg,
+            rgba(225, 255, 189, 0.16) 0%,
+            rgba(255, 255, 255, 0.80) 103.94%),
+        linear-gradient(167deg,
+            rgba(159, 221, 255, 0.40) 0%,
+            rgba(255, 255, 255, 0.50) 93.8%),
+        #FFFFFF;
+
+
+    padding: 51px 0 0 22px;
+    display: flex;
+    flex-direction: column;
+}
+
+.prev_btn{
+    width: 8px;
+}
+
+.checkin_title {
+    font-weight: 600;
+    font-size: 28px;
+    letter-spacing: -2%;
+    margin-top: 49px;
+}
+
+.checkin_content {
+    font-weight: 400;
+    font-size: 16px;
+    letter-spacing: -2%;
+    color: #7B7578;
+    margin-top: 19px;
+}
+
+.checkin_bot_btn{
+    width: 350px;
+    height: 51px;
+    cursor: pointer;
+    background-color: #2E3A38;
+    border-radius: 10px;
+    font-weight: 500;
+    font-size: 15px;
+    letter-spacing: -2%;
+    color: white;
+    margin-top: auto;
+    margin-bottom: 30px;
+}
+
+.checkin_wrap img{
+    cursor: pointer;
+}
+
+/* =========================================== */
+
+.checkin_progress {
+    display: flex;
+    gap: 5px;
+    width: 349px;
+    margin: 18px 0 31px 0;
+}
+
+.progress_bar {
+    flex: 1;
+    height: 5px;
+    border-radius: 100px;
+    background-color: #F2F2F2;
+}
+
+.progress_bar.active {
+    background-color: #8FDCD2;
+}

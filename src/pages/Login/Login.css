@@ -1,0 +1,115 @@
+.login-page {
+  max-width: 393px;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  background-image: none;
+
+  display: flex;
+  flex-direction: column;
+  padding: 0 24px;
+}
+
+.login-page .input {
+  width: 100%;
+  padding: 16px;
+
+  border-radius: 8px;
+
+  font-family: var(--font-family-base);
+  font-size: 16px;
+  font-weight: var(--font-regular);
+  color: var(--color-text-primary);
+}
+
+.login-page .input::placeholder {
+  color: #a3a3a3;
+}
+
+.login-logo {
+  width: 145px;
+  height: 145px;
+  margin: 130px auto 50px;
+
+  background-image: url('../../assets/images/nura-logo.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 11px;
+}
+
+.login-form .input {
+  width: 320px;
+  height: 48px;
+
+  background-color: var(--color-white);
+  border: 1px solid #f0edee;
+  caret-color: #F18E8E;
+
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-15);
+  font-weight: var(--font-medium);
+}
+
+.login-form .input:focus-visible {
+  outline: none;
+}
+
+.login-form .input::placeholder {
+  color: #d9d2d4;
+}
+
+.login-error {
+  width: 320px;
+  margin: -2px 0 0;
+
+  font-size: 13px;
+  font-weight: var(--font-medium);
+  color: #D27373;
+}
+
+.login-form .btn {
+  width: 320px;
+  height: 48px;
+  margin-top: var(--space-8);
+
+  font-size: var(--font-size-15);
+  font-weight: var(--font-medium);
+}
+
+.login-form .btn:active {
+  background-color: #341a1a;
+}
+
+.login-links {
+  margin-top: 15px;
+
+  display: flex;
+  justify-content: center;
+  gap: var(--space-8);
+
+  font-size: 13px;
+  font-weight: var(--font-medium);
+  color: var(--color-text-secondary);
+}
+
+.login-links a {
+  color: var(--color-text-secondary);
+}
+
+.login-footer {
+  margin-top: 94px;
+  text-align: center;
+}
+
+.login-footer a {
+  font-size: var(--font-size-15);
+  font-weight: var(--font-medium);
+  color: var(--color-text-secondary);
+  text-decoration: underline;
+}

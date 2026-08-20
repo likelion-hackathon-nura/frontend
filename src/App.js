@@ -1,24 +1,81 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import Login from './pages/Login/Login';
+import Home from './pages/Home/Home';
+import SignUp from './pages/Login/SignUp';
+import { OnboardingProvider } from './pages/Onboarding/OnboardingContext';
+import Step1WorkSchedule from './pages/Onboarding/Step1WorkSchedule';
+import Step2SleepMeal from './pages/Onboarding/Step2SleepMeal';
+import Step3Activity from './pages/Onboarding/Step3Activity';
+import Step4SkinInfo from './pages/Onboarding/Step4SkinInfo';
+import Complete from './pages/Onboarding/Complete';
+import Report from './pages/Report/Report';
+import Skin from './pages/Skin/Skin'
+import CheckIn from './pages/Skin/CheckIn'
+import Recovery from './pages/Skin/Recovery'
+import ScanLoading from './pages/WorkSchedule/ScanLoading';
+import ScanResult from './pages/WorkSchedule/ScanResult';
+import RegisterComplete from './pages/WorkSchedule/RegisterComplete';
+import ManualEntry from './pages/WorkSchedule/ManualEntry';
+import CategorySelect from './pages/Schedule/CategorySelect';
+import DateTimeInput from './pages/Schedule/DateTimeInput';
+import RefreshTimeWarning from './pages/Schedule/RefreshTimeWarning';
+import AiRecommendation from './pages/Schedule/AiRecommendation';
+import ScheduleComplete from './pages/Schedule/ScheduleComplete';
+import Mypage from './pages/Mypage/Mypage'
+import EditProfile from './pages/Mypage/MypageDetail/EditProfile'
+import CosmeticManagement from './pages/Mypage/MypageDetail/CosmeticManagement'
+import AddCosmetic from './pages/Mypage/MypageDetail/AddCosmetic'
+import Feedback from './pages/Mypage/MypageDetail/Feedback'
+import EditInitialSettings from './pages/Mypage/MypageDetail/EditInitialSettings'
+
+function OnboardingLayout() {
+  return (
+    <OnboardingProvider>
+      <Outlet />
+    </OnboardingProvider>
+  );
+}
+
+const queryClient = new QueryClient();
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <QueryClientProvider client={queryClient}>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/onboarding" element={<OnboardingLayout />}>
+          <Route path="step1" element={<Step1WorkSchedule />} />
+          <Route path="step2" element={<Step2SleepMeal />} />
+          <Route path="step3" element={<Step3Activity />} />
+          <Route path="step4" element={<Step4SkinInfo />} />
+          <Route path="complete" element={<Complete />} />
+        </Route>
+        <Route path="/report" element={<Report />} />
+        <Route path="/skin" element={<Skin />} />
+        <Route path="/checkin" element={<CheckIn />} />
+        <Route path="/recovery" element={<Recovery />} />
+        <Route path="/work-schedule/scan-loading" element={<ScanLoading />} />
+        <Route path="/work-schedule/scan-result" element={<ScanResult />} />
+        <Route path="/work-schedule/register-complete" element={<RegisterComplete />} />
+        <Route path="/work-schedule/manual-entry" element={<ManualEntry />} />
+        <Route path="/schedule/category" element={<CategorySelect />} />
+        <Route path="/schedule/datetime" element={<DateTimeInput />} />
+        <Route path="/schedule/warning" element={<RefreshTimeWarning />} />
+        <Route path="/schedule/recommend" element={<AiRecommendation />} />
+        <Route path="/schedule/complete" element={<ScheduleComplete />} />
+        <Route path="/mypage" element={<Mypage />} />
+        <Route path="/mypage/edit-profile" element={<EditProfile />} />
+        <Route path="/mypage/cosmetic-management" element={<CosmeticManagement />} />
+        <Route path="/mypage/cosmetic-management/add" element={<AddCosmetic />} />
+        <Route path="/mypage/feedback" element={<Feedback />} />
+        <Route path="/mypage/initial-settings" element={<EditInitialSettings />} />
+      </Routes>
+    </BrowserRouter>
+    </QueryClientProvider>
   );
 }
 

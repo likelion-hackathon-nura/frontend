@@ -1,0 +1,457 @@
+.home-page {
+  position: relative;
+  max-width: 393px;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  padding: 24px 22px 110px;
+}
+
+.home-greeting {
+  left: 22px;
+  top: 56px;
+  position: absolute;
+  font-size: var(--font-size-16);
+  font-weight: var(--font-light);
+  color: var(--color-text-primary);
+}
+
+/* 근무 형태에 따라 문구 길이가 달라지므로 아이콘은 텍스트 뒤에 흐름으로 붙인다. */
+.home-today-icon {
+  flex-shrink: 0;
+  width: auto;
+  height: 26px;
+  margin-bottom: 2px;
+}
+
+.home-today {
+  height: 90px;
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.home-today h1 {
+  font-size: var(--font-size-20);
+  font-weight: var(--font-bold);
+}
+
+.shift-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+
+  font-size: 13px;
+  font-weight: var(--font-bold);
+  color: var(--color-white);
+}
+
+.shift-N {
+  background-color: #332c4c;
+}
+
+.shift-D {
+  background-color: #f6c6c6;
+  color: #7a4b4b;
+}
+
+.shift-E {
+  background-color: #9f8fc0;
+}
+
+.shift-OFF {
+  background-color: #f5e6a0;
+  color: #7a6a3d;
+}
+
+.home-calendar-card {
+  width: 350px;
+  height: 138px;
+  box-sizing: border-box;
+  margin-top: 19px;
+  padding: 16px 16px 19px;
+
+  border-radius: 16px;
+  background-color: var(--color-white);
+}
+
+.home-calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+
+  font-size: 15px;
+  font-weight: var(--font-medium);
+  color: #000000;
+}
+
+.calendar-nav {
+  padding: 0;
+  border: 0;
+  background: none;
+
+  display: flex;
+  cursor: pointer;
+}
+
+.home-calendar-days {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 -16px;
+}
+
+.calendar-day {
+  width: 49px;
+  height: 86px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 5px;
+  box-sizing: border-box;
+
+  border-radius: 12px;
+}
+
+.calendar-day.is-today {
+  width: 49px;
+  height: 86px;
+
+  background-color: #FFE0D6;
+}
+
+.calendar-day-label {
+  font-size: var(--font-size-14);
+  font-weight: var(--font-medium);
+  color: #7B7578;
+}
+
+.calendar-day-date {
+  margin-top: 3px;
+  font-size: var(--font-size-15);
+  font-weight: var(--font-medium);
+}
+
+.calendar-day-shift-icon {
+  width: 34px;
+  height: 20px;
+  margin-top: 6px;
+}
+
+.home-section-title {
+  margin-top: 27px;
+
+  font-size: var(--font-size-20);
+  font-weight: var(--font-bold);
+}
+
+.home-time-card {
+  position: relative;
+  margin-top: 22px;
+  margin-bottom: 40px;
+  padding: 24px 20px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  border-radius: 20px;
+  background-color: var(--color-white);
+}
+
+.home-card-dots {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.home-card-dots .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #e5dede;
+}
+
+.home-card-dots .dot.is-active {
+  background-color: #f18e8e;
+}
+
+.home-card-dots .dot {
+  cursor: pointer;
+}
+
+.home-ring-wrap {
+  position: relative;
+  width: 250px;
+  height: 250px;
+  margin: 8px 0 20px;
+}
+
+.home-ring-svg {
+  display: block;
+  overflow: visible;
+}
+
+.home-ring-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 30px;
+  color: var(--color-primary);
+  font-weight: var(--font-medium);
+}
+
+.home-ring-center-label {
+  font-size: 12px;
+  font-weight: var(--font-semibold);
+  color: var(--color-primary);
+}
+
+.home-ring-center-value {
+  font-size: 25px;
+  font-weight: var(--font-medium);
+  color: var(--color-primary);
+  text-align: center;
+}
+
+.home-stats {
+  width: 350px;
+  display: flex;
+}
+
+.home-stat {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  box-sizing: border-box;
+
+  text-align: center;
+}
+
+.home-stat:nth-child(1) {
+  width: 114px;
+}
+
+.home-stat:nth-child(2) {
+  width: 118px;
+}
+
+.home-stat:nth-child(3) {
+  width: 118px;
+}
+
+.home-stat + .home-stat {
+  border-left: 1px solid #f0edee;
+}
+
+.home-stat-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 18px;
+}
+
+.social-time-icon, .refresh-time-icon, .my-time-icon {
+  width: 27px;
+  height: 27px;
+}
+
+.home-stat-label-social {
+  font-size: var(--font-size-12);
+  color: #6B698E;
+}
+
+.home-stat-label-refresh {
+  font-size: var(--font-size-12);
+  color: #F18E8E;
+}
+
+.home-stat-label-mytime {
+  font-size: var(--font-size-12);
+  color: #E7CA94;
+}
+
+.home-stat-value {
+  font-size: var(--font-size-15);
+  font-weight: var(--font-bold);
+}
+
+.home-stat-pill {
+  font-size: var(--font-size-12);
+  font-weight: var(--font-medium);
+  padding: 2px 8px;
+  border-radius: 100px;
+}
+
+.home-stat-pill-social {
+  background-color: #F4F0FE;
+  color: #6B698E;
+}
+
+.home-stat-pill-refresh {
+  background-color: #FFEDED;
+  color: #F18E8E;
+}
+
+.home-stat-pill-mytime {
+  background-color: #FFFCE1;
+  color: #E7CA94;
+}
+
+.home-stat-entries {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.home-stat-entry {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.home-stat-time {
+  font-size: var(--font-size-15);
+  font-weight: var(--font-medium);
+  white-space: nowrap;
+}
+
+.home-stat-empty {
+  font-size: 10px;
+  font-weight: var(--font-regular);
+  color: var(--color-text-secondary);
+}
+
+.home-stat-tag {
+  width: 91px;
+  height: 22px;
+  box-sizing: border-box;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 10px;
+  font-weight: var(--font-medium);
+  border-radius: 5px;
+  white-space: nowrap;
+}
+
+.home-stat-tag-social {
+  background-color: #F4F0FE;
+  color: #7B7578;
+}
+
+.home-stat-tag-refresh {
+  background-color: #FFEDED;
+  color: #7B7578;
+}
+
+.home-stat-tag-mytime {
+  background-color: #FFFCE1;
+  color: #7B7578;
+}
+
+.home-expand-toggle {
+  margin-top: 16px;
+  padding: 0;
+  border: 0;
+  background: none;
+
+  font-size: 18px;
+  color: #cfc9c9;
+  cursor: pointer;
+}
+
+.home-ai-comment {
+  width: 100%;
+  margin-top: 20px;
+  padding: 16px;
+
+  border-radius: 10px;
+  background-color: #F4F0FE;
+  text-align: left;
+}
+
+.home-ai-title {
+  margin-bottom: 14px;
+
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  font-size: 15px;
+  font-weight: var(--font-medium);
+  color: #8C3DD0;
+}
+
+.home-ai-title-icon {
+  width: 19px;
+  height: 17px;
+}
+
+.home-ai-body {
+  margin-top: 14px;
+  margin-bottom: 15px;
+
+  font-size: 12px;
+  color: #1A1A1A;
+}
+
+.home-ai-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+}
+
+.home-ai-tag {
+  height: 25px;
+  padding: 0 12px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 100px;
+  background-color: var(--color-white);
+
+  font-size: 10px;
+  color: #5B5658;
+}
+
+.home-ai-divider {
+  width: 100%;
+  margin-top: 20px;
+  border-top: 1px dashed #F0EDEE;
+}
+
+.home-ai-collapse {
+  width: 100%;
+  margin-top: 12px;
+  padding: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+

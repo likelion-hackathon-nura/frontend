@@ -1,0 +1,193 @@
+.datetime-input-page {
+  position: relative;
+  max-width: 393px;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  background-image: none;
+  padding: 0 22px 40px;
+}
+
+.datetime-input-header {
+  position: relative;
+  height: 68px;
+}
+
+.datetime-input-back {
+  position: absolute;
+  left: 0;
+  top: 51px;
+
+  padding: 0;
+  border: 0;
+  background: none;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.datetime-input-progress {
+  position: absolute;
+  right: 0;
+  top: 97px;
+
+  font-size: var(--font-size-15);
+  font-weight: var(--font-medium);
+  color: #EC8181;
+}
+
+.datetime-input-progress-bar-wrap {
+  margin: 17px -22px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.datetime-input-progress-bar {
+  width: 393px;
+  height: 5px;
+  border-radius: 2px;
+  background-color: #f0edee;
+  overflow: hidden;
+}
+
+.datetime-input-progress-bar-fill {
+  width: 393px;
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #ffb7b7 0%, #fffce1 100%);
+}
+
+.datetime-input-title-row {
+  margin-top: 32px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.datetime-input-title {
+  font-size: 24px;
+  font-weight: var(--font-semibold);
+  line-height: 1.1;
+}
+
+.datetime-input-category-icon {
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+}
+
+.datetime-input-section {
+  margin: 27px -22px 0;
+  padding: 27px 22px 32px;
+  box-sizing: border-box;
+  background-color: #F7F3F3;
+}
+
+.datetime-input-field {
+  margin-top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.datetime-input-field + .datetime-input-field {
+  margin-top: 17px;
+}
+
+.datetime-input-label {
+  font-size: var(--font-size-16);
+  font-weight: var(--font-medium);
+  color: #5B5658;
+}
+
+.datetime-input-trigger {
+  width: 100%;
+  height: 52px;
+  box-sizing: border-box;
+  padding: 0 16px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  border: 1px solid #FFC7C7;
+  border-radius: 12px;
+  background-color: #FFFFFF;
+  cursor: pointer;
+}
+
+.datetime-input-value {
+  flex: 1;
+  text-align: left;
+  font-family: var(--font-family-base);
+  font-size: 14px;
+  font-weight: var(--font-regular);
+  color: var(--color-text);
+}
+
+.datetime-input-placeholder {
+  flex: 1;
+  text-align: left;
+  font-family: var(--font-family-base);
+  font-size: 14px;
+  color: #C9C2C4;
+}
+
+.datetime-input-text-wrap {
+  width: 100%;
+  height: 50px;
+  box-sizing: border-box;
+  padding: 0 16px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  border: 1px solid #FFC7C7;
+  border-radius: 12px;
+  background-color: #FFFFFF;
+}
+
+.datetime-input-text {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+
+  border: 0;
+  background: none;
+
+  font-family: var(--font-family-base);
+  font-size: 14px;
+  font-weight: var(--font-medium);
+  color: A89EA1;
+}
+
+.datetime-input-text:focus-visible {
+  outline: none;
+}
+
+.datetime-input-text::placeholder {
+  font-weight: var(--font-regular);
+  color: #C9C2C4;
+}
+
+.datetime-input-error {
+  margin-top: 12px;
+
+  font-size: 13px;
+  font-weight: var(--font-medium);
+  color: #D27373;
+}
+
+.datetime-input-next,
+.datetime-input-next:disabled {
+  margin-top: 134px;
+  height: 51px;
+  color: var(--color-white);
+  background-color: var(--color-primary);
+}
+
+.datetime-input-next:active {
+  background-color: #341a1a;
+}

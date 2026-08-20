@@ -1,0 +1,156 @@
+.step1-page {
+  position: relative;
+  max-width: 393px;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  background-image: none;
+  padding: 0 22px;
+}
+
+.step1-header {
+  position: relative;
+  height: 68px;
+}
+
+.step1-back {
+  position: absolute;
+  left: 0;
+  top: 51px;
+
+  padding: 0;
+  border: 0;
+  background: none;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.step1-progress {
+  position: absolute;
+  right: 0;
+  top: 97px;
+
+  font-size: var(--font-size-15);
+  font-weight: var(--font-medium);
+  color: #EC8181;
+}
+
+.step1-progress-bar-wrap {
+  margin: 17px -22px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.step1-progress-bar {
+  width: 393px;
+  height: 5px;
+  border-radius: 2px;
+  background-color: #f0edee;
+  overflow: hidden;
+}
+
+.step1-progress-bar-fill {
+  width: 111px;
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #ffb7b7 0%, #fffce1 100%);
+}
+
+.step1-title {
+  margin-top: 32px;
+
+  font-size: 24px;
+  font-weight: var(--font-bold);
+  line-height: 1.4;
+}
+
+.step1-subtitle {
+  margin-top: 6px;
+
+  font-size: var(--font-size-15);
+  font-weight: var(--font-medium);
+  color: var(--color-text-secondary);
+}
+
+.step1-card-wrap {
+  margin: 19px -22px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.step1-card {
+  width: 393px;
+  min-height: 616px;
+  padding: 31px 22px 20px;
+
+  background-color: #f7f3f3;
+}
+
+.step1-shift {
+  padding: 18px 0;
+}
+
+.step1-shift:first-child {
+  padding-top: 0;
+}
+
+.step1-shift-label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 21px;
+
+  font-size: 17px;
+  font-weight: var(--font-semibold);
+}
+
+.step1-shift-emoji {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+}
+
+.step1-time-row {
+  display: flex;
+  gap: 48px;
+  padding-left: 17px;
+}
+
+.step1-time-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.step1-time-label {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.step1-time-trigger {
+  width: 114px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 11px 12px;
+
+  border-bottom: 1px solid #D9D2D4;
+  border-radius: 0;
+  background: none;
+
+  font-family: var(--font-family-base);
+  font-size: 18px;
+  font-weight: var(--font-medium);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.step1-next {
+  margin-top: 32px;
+  height: 52px;
+}
+
+.step1-next:active {
+  background-color: #341a1a;
+}
