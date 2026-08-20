@@ -1,20 +1,18 @@
 .mypage_wrap {
     width: 100%;
     max-width: 393px;
+    height: 100vh;
+    height: 100dvh;
     margin: 0 auto;
+    padding-bottom: calc(136px + env(safe-area-inset-bottom));
+    box-sizing: border-box;
     background-color: #FFFCFC;
-
     display: flex;
     flex-direction: column;
     align-items: center;
-
-    height: 100vh;
-    height: 100dvh;
     overflow-y: auto;
     overflow-x: hidden;
-    padding-bottom: 136px;
-    box-sizing: border-box;
-
+    overscroll-behavior-y: none;
     scrollbar-width: none;
     -ms-overflow-style: none;
 }
@@ -27,18 +25,6 @@
 .mypage_line,
 .mypage_main {
     flex-shrink: 0;
-}
-
-.mypage_wrap> :last-child {
-    width: 100%;
-    max-width: 393px;
-
-    position: fixed;
-    left: 50%;
-    bottom: 0;
-    transform: translateX(-50%);
-
-    z-index: 100;
 }
 
 /* ================================================ */
