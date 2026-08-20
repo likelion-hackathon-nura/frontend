@@ -17,9 +17,10 @@ const RANK_ICONS = {
 
 // 응답에 태그 문구가 없어서 추천 유형(type)으로 배지 하나를 만든다.
 const TYPE_TAGS = {
-  TODAY_MY: '🌙 오늘 개인 시간',
-  OFF_DAY: '✅ 근무 없는 날',
-  BUFFER_RELAXED: '⏰ 출퇴근 여유시간 사용',
+  TODAY_SAFE: '오늘 안전한 시간대',
+  OFF_DAY: '근무 없는 날',
+  NEARBY_DAY: '근무 있는 가까운 날',
+  BUFFER_RELAXED: '출퇴근 여유 시간 일부 사용',
 };
 
 const DAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'];
@@ -82,7 +83,7 @@ function AiRecommendation() {
         </button>
       </div>
 
-      <h1 className="ai-recommendation-title">AI 추천 일정</h1>
+      <h1 className="ai-recommendation-title">대체 일정 추천</h1>
       <p className="ai-recommendation-subtitle">내용을 확인한 뒤 필요한 부분을 수정해 주세요.</p>
 
       <div className="ai-recommendation-section">
