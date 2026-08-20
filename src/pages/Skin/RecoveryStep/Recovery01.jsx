@@ -3,15 +3,22 @@ import React from 'react'
 import './Recovery01.css'
 
 import CheckTip from '../../../assets/images/recovery_check_icon.svg'
+import CheckWhite02 from '../../../assets/images/check_white_2.svg'
 import TitleLine from '../../../assets/images/recovery_title_icon.svg'
 
-const Recovery01 = ({ onNext, matchedProduct, stepData, nextStepData, }) => {
+const Recovery01 = ({
+    onNext,
+    matchedProduct,
+    stepData,
+    stepNumber,
+    routineSteps,
+}) => {
 
     const ingredients = (() => {
         const value = stepData?.recommendedIngredients
 
         if (!value) {
-            return ['병풀추출물(CICA)', '판테놀', '알란토인']
+            return []
         }
 
         if (Array.isArray(value)) return value
@@ -30,7 +37,7 @@ const Recovery01 = ({ onNext, matchedProduct, stepData, nextStepData, }) => {
                 .filter(Boolean)
         }
 
-        return ['병풀추출물(CICA)', '판테놀', '알란토인']
+        return []
     })()
 
     const precautions = Array.isArray(stepData?.precautions)
@@ -41,9 +48,7 @@ const Recovery01 = ({ onNext, matchedProduct, stepData, nextStepData, }) => {
                 .map(precaution => precaution.trim())
                 .filter(Boolean)
             : [
-                '피부가 많이 예민한 날에는 문지르기보다 가볍게 눌러 흡수시켜주세요.',
-                '세안 후 3분 이내에 사용하면 수분 손실을 줄이는 데 도움이 됩니다.',
-                '붉은기가 심한 부위는 얇게 한 번 더 레이어링해도 좋아요.',
+                '제품 사용 중 피부에 이상이 느껴지면 사용을 중단해주세요.',
             ]
 
 
@@ -51,33 +56,62 @@ const Recovery01 = ({ onNext, matchedProduct, stepData, nextStepData, }) => {
         <div className="recovery01_wrap">
 
             <div className="recovery01_progress">
-                <div className="recovery01_progress_step active">
-                    <span>1</span>
-                    <p>{stepData?.careTypeKr || stepData?.title || '진정'}</p>
-                </div>
+                {routineSteps.map((routineStep, index) => {
+                    const number = index + 1
+                    const isCompleted = number < stepNumber
+                    const isActive = number <= stepNumber
 
-                <div className="recovery01_progress_line" />
+                    return (
+                        <React.Fragment
+                            key={routineStep.stepOrder ?? index}
+                        >
+                            {index > 0 && (
+                                <div
+                                    className={`recovery01_progress_line ${number <= stepNumber ? 'active' : ''
+                                        }`}
+                                />
+                            )}
 
-                <div className="recovery01_progress_step">
-                    <span>2</span>
-                    <p>{nextStepData?.careTypeKr || nextStepData?.title || '보습'}</p>
-                </div>
+                            <div
+                                className={`recovery01_progress_step ${isActive ? 'active' : ''
+                                    }`}
+                            >
+                                <span>
+                                    {isCompleted ? (
+                                        <img
+                                            src={CheckWhite02}
+                                            alt="이전 단계 완료"
+                                        />
+                                    ) : (
+                                        number
+                                    )}
+                                </span>
+
+                                <p>
+                                    {routineStep.careTypeKr ||
+                                        routineStep.careType ||
+                                        `케어 ${number}`}
+                                </p>
+                            </div>
+                        </React.Fragment>
+                    )
+                })}
             </div>
 
             <div className="recovery01_top">
                 <div className="recovery01_title">
-                    <span>STEP {stepData?.stepOrder || 1}</span>
-                    <p>{stepData?.title || '먼저 피부 자극을 진정시켜볼게요.'}</p>
+                    <span>STEP {stepData?.stepOrder || stepNumber}</span>
+                    <p>{stepData?.title || '오늘의 피부 상태에 맞는 케어를 시작해볼게요.'}</p>
                 </div>
 
                 <p className="recovery01_content01">
                     {stepData?.reason ||
-                        '오늘 체크인 결과를 바탕으로 진정 단계가 필요해요.'}
+                        '오늘 체크인 결과를 바탕으로 추천한 케어 단계예요.'}
                 </p>
 
                 <p className="recovery01_content02">
                     {stepData?.description ||
-                        '피부에 자극을 최소화하면서 진정 중심의 케어를 진행해주세요.'}
+                        '안내된 방법에 따라 부드럽게 케어를 진행해주세요.'}
                 </p>
             </div>
 
@@ -90,7 +124,7 @@ const Recovery01 = ({ onNext, matchedProduct, stepData, nextStepData, }) => {
                     </div>
                     <p className="recovery01_section_description">
                         {stepData?.recommendedIngredientDescription ||
-                            '자극을 완화하고 피부를 편안하게 진정시키는 데 도움이 되는 성분이에요.'}
+                            '현재 피부 상태에 맞춰 추천하는 성분이에요.'}
                     </p>
                     <div className="recovery01_tags">
                         {ingredients.map((ingredient, index) => (

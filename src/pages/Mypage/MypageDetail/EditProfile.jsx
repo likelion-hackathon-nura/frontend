@@ -87,7 +87,7 @@ const EditProfile = () => {
                 <button
                     type="button"
                     className="editprofile_prev_btn"
-                    onClick={() => navigate(-1)}
+                    onClick={() => navigate('/mypage')}
                 >
                     <img src={PrevBtn} alt="뒤로가기" />
                 </button>
