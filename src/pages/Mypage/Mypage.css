@@ -17,6 +17,12 @@
     -ms-overflow-style: none;
 }
 
+html:has(.mypage_wrap),
+body:has(.mypage_wrap) {
+    overflow: hidden;
+    background-color: #FFFCFC;
+}
+
 .mypage_wrap::-webkit-scrollbar {
     display: none;
 }
